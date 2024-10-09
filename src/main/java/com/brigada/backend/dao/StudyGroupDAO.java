@@ -1,13 +1,11 @@
 package com.brigada.backend.dao;
 
 import com.brigada.backend.domain.StudyGroup;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.*;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.QueryProducer;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -112,5 +110,16 @@ public class StudyGroupDAO {
                 .groupBy(root.get("id"));
 
         return sessionFactory.getCurrentSession().createQuery(query).getResultList();
+    }
+
+    @Transactional
+    public void deleteByShouldBeExpelled(Integer value) {
+        CriteriaBuilder cb = sessionFactory.getCriteriaBuilder();
+        CriteriaDelete<StudyGroup> delete = cb.createCriteriaDelete(StudyGroup.class);
+        Root<StudyGroup> root = delete.from(StudyGroup.class);
+
+        delete.where(cb.equal(root.get("shouldBeExpelled"), value));
+
+        sessionFactory.getCurrentSession().createMutationQuery(delete).executeUpdate();
     }
 }

@@ -36,4 +36,10 @@ public class SpecialOperationsController {
         studyGroupService.expelAllStudentsByGroup(id);
         return ResponseEntity.ok().build();
     }
+
+    @DeleteMapping("/delete-by-should-be-expelled")
+    public ResponseEntity<Void> deleteByShouldBeExpelled(@RequestParam Integer value) {
+        studyGroupService.deleteByShouldBeExpelled(value);
+        return ResponseEntity.noContent().build();
+    }
 }

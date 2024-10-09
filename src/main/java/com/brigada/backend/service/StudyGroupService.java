@@ -94,4 +94,8 @@ public class StudyGroupService {
         List<Object[]> list = dao.getGroupCountById();
         return list.stream().map((Object[] o) -> new GroupCountByIdDTO((Integer) o[0], (Long) o[1])).collect(Collectors.toList());
     }
+
+    public void deleteByShouldBeExpelled(Integer value) {
+        dao.deleteByShouldBeExpelled(value);
+    }
 }
