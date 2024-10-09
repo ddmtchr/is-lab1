@@ -59,6 +59,7 @@ const LoginForm: React.FC = () => {
                 <Button variant="contained" type="submit">Войти</Button>
 
                 <p style={{margin: 0}}>Еще нет аккаунта? <a className="redirect-link" onClick={() => navigate('/register')}>Зарегистрироваться</a></p>
+
             </Box>
         </div>
 
