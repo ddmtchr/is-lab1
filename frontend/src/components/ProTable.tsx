@@ -1,66 +1,65 @@
-import React, {useState} from 'react';
-import {DataGrid, GridColDef} from '@mui/x-data-grid';
+import React, {useEffect, useState} from 'react';
+import {DataGrid, GridColDef, GridEventListener} from '@mui/x-data-grid';
 import DeleteIcon from '@mui/icons-material/Delete';
-import {Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography} from '@mui/material';
+import {Button} from '@mui/material';
 import {ruRU} from '@mui/x-data-grid/locales';
-import {Color, Coordinates, Country, FormOfEducation, Person, Semester} from "../interfaces.ts";
+import {Coordinates, FormOfEducation, Person, RowData, Semester} from "../interfaces.ts";
 import axiosInstance from "../axiosConfig.ts";
+import ObjectControlModal from "./reusable/ObjectControlModal.tsx";
 
 
-interface RowData {
-    id: number;
-    name: string;
-    coordinates: Coordinates;
-    creationDate: Date;
-    studentsCount: number;
-    expelledStudents: number;
-    transferredStudents: number;
-    formOfEducation: FormOfEducation;
-    shouldBeExpelled: number;
-    semester: Semester;
-    groupAdmin: Person;
-}
 
-const initialRows: RowData[] = [
-    {
-        id: 1,
-        name: 'P3311',
-        coordinates: {x: 10, y: 20},
-        creationDate: new Date(),
-        studentsCount: 13,
-        expelledStudents: 3,
-        transferredStudents: 2,
-        formOfEducation: FormOfEducation.FULL_TIME_EDUCATION,
-        shouldBeExpelled: 1,
-        semester: Semester.SIXTH,
-        groupAdmin: {
-            name: 'Sergei',
-            eyeColor: Color.WHITE,
-            hairColor: Color.YELLOW,
-            location: {
-                x: 100,
-                y: 20,
-                z: 55,
-                name: 'Knowhere'
-            },
-            weight: 62,
-            nationality: Country.RUSSIA
-        }
-    },
-];
+
 
 const CollectionObjectsDataGrid: React.FC = () => {
-    const [rows, setRows] = useState(initialRows);
+    const [rows, setRows] = useState<RowData[]>([]);
+    const [loading, setLoading] = useState(true)
     const [selectedRowIds, setSelectedRowIds] = useState<number[]>([]);
     const [open, setOpen] = useState(false)
+    const [chosenObject, setChosenObject] = useState<RowData>()
 
-    const handleClickOpen = () => {
-        setOpen(true);
+    useEffect(() => {
+        axiosInstance.get('api/study-groups')
+            .then((response) => {
+
+                console.log(response.data)
+
+                const rowData: RowData[] = response.data.map((item: any) => ({
+                    id: item.id,
+                    name: item.name,
+                    coordinates: item.coordinates as Coordinates, // предполагаем, что координаты приходят корректно
+                    creationDate: new Date(item.creationDate), // преобразование строки в объект Date
+                    studentsCount: item.studentsCount,
+                    expelledStudents: item.expelledStudents,
+                    transferredStudents: item.transferredStudents,
+                    formOfEducation: item.formOfEducation as FormOfEducation, // Приведение к типу FormOfEducation
+                    shouldBeExpelled: item.shouldBeExpelled,
+                    semesterEnum: item.semesterEnum as Semester, // Приведение к типу Semester
+                    groupAdmin: item.groupAdmin as Person, // Приведение к типу Person
+                }));
+
+
+               setRows(rowData)
+                setLoading(false)
+            })
+    }, [])
+
+    if (loading) {
+        return <div>Loading...</div>; // Отображаем загрузку до получения данных
+    }
+
+    const handleClickOpen: GridEventListener<'rowClick'> = (params) => {
+        // Получаем ID строки, на которую кликнули
+        console.log(params.row)
+        setChosenObject(params.row);
+        setOpen(true)
     };
 
     const handleClose = () => {
         setOpen(false);
     };
+
+
 
     const handleSelectionChange = (newSelection: any) => {
         setSelectedRowIds(newSelection);
@@ -73,12 +72,7 @@ const CollectionObjectsDataGrid: React.FC = () => {
         setSelectedRowIds([]);
     };
 
-    const getObjectsCollection = () => {
-        axiosInstance.get('study-groups')
-            .then((response) => {
-                console.log(response)
-            })
-    }
+
 
 
     const columns: GridColDef[] = [
@@ -95,11 +89,12 @@ const CollectionObjectsDataGrid: React.FC = () => {
         { field: 'transferredStudents', headerName: 'transferredStudents', width: 150 },
         { field: 'formOfEducation', headerName: 'formOfEducation', width: 150 },
         { field: 'shouldBeExpelled', headerName: 'shouldBeExpelled', width: 150 },
-        { field: 'semester', headerName: 'Semester', width: 110 },
+        { field: 'semesterEnum', headerName: 'Semester', width: 110 },
         { field: 'groupAdmin', headerName: 'Group admin', width: 110, renderCell: (params) => {
             return params.value.name
             } },
     ];
+
 
     return (
         <div style={{ height: 400, width: '100%' }}>
@@ -112,6 +107,7 @@ const CollectionObjectsDataGrid: React.FC = () => {
                 onRowClick={handleClickOpen}
                 localeText={ruRU.components.MuiDataGrid.defaultProps.localeText}
             />
+            <ObjectControlModal modalOpen={open} onModalCLose={handleClose} chosenObject={chosenObject}/>
             <div>
                 {selectedRowIds.length !== 0 &&
                     <><Button
@@ -124,26 +120,11 @@ const CollectionObjectsDataGrid: React.FC = () => {
                         <DeleteIcon/>
                     </Button>
 
-                        <Button onClick={getObjectsCollection}>
-                            Пососать хуйца
-                        </Button>
                     </>
                 }
 
             </div>
-            <Dialog open={open} onClose={handleClose}>
-                <DialogTitle>Редактировать объект</DialogTitle>
-                <DialogContent>
-                    <Typography>
-                        Свойства
-                    </Typography>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClose} color="primary" variant="contained">
-                        Сохранить
-                    </Button>
-                </DialogActions>
-            </Dialog>
+
 
         </div>
     );

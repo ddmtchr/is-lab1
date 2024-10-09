@@ -1,3 +1,17 @@
+export interface RowData {
+    id: number;
+    name: string;
+    coordinates: Coordinates;
+    creationDate: Date;
+    studentsCount: number;
+    expelledStudents: number;
+    transferredStudents: number;
+    formOfEducation: FormOfEducation;
+    shouldBeExpelled: number;
+    semesterEnum: Semester;
+    groupAdmin: Person;
+}
+
 export enum FormOfEducation {
     DISTANCE_EDUCATION,
     FULL_TIME_EDUCATION,
