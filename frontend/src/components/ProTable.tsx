@@ -4,6 +4,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import {Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography} from '@mui/material';
 import {ruRU} from '@mui/x-data-grid/locales';
 import {Color, Coordinates, Country, FormOfEducation, Person, Semester} from "../interfaces.ts";
+import axiosInstance from "../axiosConfig.ts";
 
 
 interface RowData {
@@ -72,6 +73,13 @@ const CollectionObjectsDataGrid: React.FC = () => {
         setSelectedRowIds([]);
     };
 
+    const getObjectsCollection = () => {
+        axiosInstance.get('study-groups')
+            .then((response) => {
+                console.log(response)
+            })
+    }
+
 
     const columns: GridColDef[] = [
         { field: 'id', headerName: 'ID', width: 90 },
@@ -103,19 +111,23 @@ const CollectionObjectsDataGrid: React.FC = () => {
                 onRowSelectionModelChange={handleSelectionChange}
                 onRowClick={handleClickOpen}
                 localeText={ruRU.components.MuiDataGrid.defaultProps.localeText}
-
             />
             <div>
                 {selectedRowIds.length !== 0 &&
-                    <Button
+                    <><Button
                         variant="contained"
                         color="primary"
                         onClick={handleDelete}
                         disabled={selectedRowIds.length === 0}
-                        style={{ marginTop: 10, marginLeft: 10 }}
+                        style={{marginTop: 10, marginLeft: 10}}
                     >
-                       <DeleteIcon/>
+                        <DeleteIcon/>
                     </Button>
+
+                        <Button onClick={getObjectsCollection}>
+                            Пососать хуйца
+                        </Button>
+                    </>
                 }
 
             </div>
