@@ -3,6 +3,7 @@ package com.brigada.backend.dao;
 import com.brigada.backend.domain.StudyGroup;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
@@ -87,5 +88,17 @@ public class StudyGroupDAO {
         query.select(cb.sum(root.get("expelledStudents")));
 
         return sessionFactory.getCurrentSession().createQuery(query).getSingleResult();
+    }
+
+    @Transactional
+    public List<StudyGroup> searchByNamePrefix(String prefix) {
+        CriteriaBuilder cb = sessionFactory.getCriteriaBuilder();
+        CriteriaQuery<StudyGroup> query = cb.createQuery(StudyGroup.class);
+
+        Root<StudyGroup> root = query.from(StudyGroup.class);
+        Predicate nameStartsWith = cb.like(root.get("name"), prefix + "%");
+        query.select(root).where(nameStartsWith);
+
+        return sessionFactory.getCurrentSession().createQuery(query).getResultList();
     }
 }

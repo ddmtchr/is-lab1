@@ -82,4 +82,10 @@ public class StudyGroupService {
         old.setExpelledStudents((long) old.getStudentsCount());
         dao.updateStudyGroup(old);
     }
+
+    public List<StudyGroupResponseDTO> searchByName(String prefix) {
+        return dao.searchByNamePrefix(prefix).stream()
+                .map(StudyGroupMapper.INSTANCE::toResponseDTO)
+                .collect(Collectors.toList());
+    }
 }
