@@ -74,4 +74,12 @@ public class StudyGroupService {
     public Long countExpelledStudents() {
         return dao.countExpelledStudents();
     }
+
+    public void expelAllStudentsByGroup(int id) {
+        Optional<StudyGroup> optional = dao.getStudyGroupById(id);
+        if (optional.isEmpty()) throw new NotFoundException();
+        StudyGroup old = optional.get();
+        old.setExpelledStudents((long) old.getStudentsCount());
+        dao.updateStudyGroup(old);
+    }
 }
