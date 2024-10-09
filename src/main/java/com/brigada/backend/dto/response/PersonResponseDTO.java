@@ -2,7 +2,6 @@ package com.brigada.backend.dto.response;
 
 import com.brigada.backend.domain.Color;
 import com.brigada.backend.domain.Country;
-import com.brigada.backend.domain.Location;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

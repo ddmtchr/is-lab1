@@ -1,8 +1,6 @@
 package com.brigada.backend.dto.response;
 
-import com.brigada.backend.domain.Coordinates;
 import com.brigada.backend.domain.FormOfEducation;
-import com.brigada.backend.domain.Person;
 import com.brigada.backend.domain.Semester;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

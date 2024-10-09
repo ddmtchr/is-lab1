@@ -1,8 +1,5 @@
 package com.brigada.backend.service;
 
-import com.brigada.backend.dao.CoordinatesDAO;
-import com.brigada.backend.dao.LocationDAO;
-import com.brigada.backend.dao.PersonDAO;
 import com.brigada.backend.dao.StudyGroupDAO;
 import com.brigada.backend.domain.Coordinates;
 import com.brigada.backend.domain.Location;
@@ -11,9 +8,6 @@ import com.brigada.backend.domain.StudyGroup;
 import com.brigada.backend.dto.request.StudyGroupRequestDTO;
 import com.brigada.backend.dto.response.StudyGroupResponseDTO;
 import com.brigada.backend.exception.NotFoundException;
-import com.brigada.backend.mapper.CoordinatesMapper;
-import com.brigada.backend.mapper.LocationMapper;
-import com.brigada.backend.mapper.PersonMapper;
 import com.brigada.backend.mapper.StudyGroupMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -75,5 +69,9 @@ public class StudyGroupService {
 
     public void deleteStudyGroupById(int id) {
         dao.deleteStudyGroupById(id);
+    }
+
+    public Long countExpelledStudents() {
+        return dao.countExpelledStudents();
     }
 }

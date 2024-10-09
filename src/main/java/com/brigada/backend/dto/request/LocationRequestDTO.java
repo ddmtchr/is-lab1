@@ -1,6 +1,5 @@
 package com.brigada.backend.dto.request;
 
-import com.brigada.backend.domain.Coordinates;
 import com.brigada.backend.domain.Location;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

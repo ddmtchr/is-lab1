@@ -1,7 +1,6 @@
 package com.brigada.backend.dao;
 
 import com.brigada.backend.domain.StudyGroup;
-import jakarta.persistence.Query;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
@@ -18,14 +17,10 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class StudyGroupDAO {
     private final SessionFactory sessionFactory;
-    private final PersonDAO personDAO;
-    private final CoordinatesDAO coordinatesDAO;
 
     @Transactional
     public StudyGroup createStudyGroup(StudyGroup studyGroup) {
         Session session = sessionFactory.getCurrentSession();
-//        coordinatesDAO.createCoordinates(studyGroup.getCoordinates());
-//        personDAO.createPerson(studyGroup.getGroupAdmin());
         session.persist(studyGroup);
         session.flush();
         return studyGroup;
@@ -81,5 +76,16 @@ public class StudyGroupDAO {
 
         return session.createQuery(query)
                 .getResultList();
+    }
+
+    @Transactional
+    public Long countExpelledStudents() {
+        CriteriaBuilder cb = sessionFactory.getCriteriaBuilder();
+        CriteriaQuery<Long> query = cb.createQuery(Long.class);
+
+        Root<StudyGroup> root = query.from(StudyGroup.class);
+        query.select(cb.sum(root.get("expelledStudents")));
+
+        return sessionFactory.getCurrentSession().createQuery(query).getSingleResult();
     }
 }

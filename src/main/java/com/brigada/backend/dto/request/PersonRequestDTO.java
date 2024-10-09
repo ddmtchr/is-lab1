@@ -2,8 +2,9 @@ package com.brigada.backend.dto.request;
 
 import com.brigada.backend.domain.Color;
 import com.brigada.backend.domain.Country;
-import com.brigada.backend.domain.Location;
 import com.brigada.backend.domain.Person;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,10 +17,12 @@ import java.util.Objects;
 @Getter
 @Setter
 public class PersonRequestDTO {
+    @NotBlank
     private String name;
     private Color eyeColor;
     private Color hairColor;
     private LocationRequestDTO location;
+    @Positive
     private Float weight;
     private Country nationality;
 

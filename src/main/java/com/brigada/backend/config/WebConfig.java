@@ -1,4 +1,4 @@
-package com.brigada.backend;
+package com.brigada.backend.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
