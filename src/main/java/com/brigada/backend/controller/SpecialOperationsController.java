@@ -1,5 +1,6 @@
 package com.brigada.backend.controller;
 
+import com.brigada.backend.dto.response.GroupCountByIdDTO;
 import com.brigada.backend.dto.response.StudyGroupResponseDTO;
 import com.brigada.backend.service.StudyGroupService;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,11 @@ public class SpecialOperationsController {
     @GetMapping("/search-by-name")
     public ResponseEntity<List<StudyGroupResponseDTO>> searchByName(@RequestParam String prefix) {
         return new ResponseEntity<>(studyGroupService.searchByName(prefix), HttpStatus.OK);
+    }
+
+    @GetMapping("/count-group-by-id")
+    public ResponseEntity<List<GroupCountByIdDTO>> getGroupCountById() {
+        return new ResponseEntity<>(studyGroupService.getGroupCountById(), HttpStatus.OK);
     }
 
     @PutMapping("/expel/{id}")

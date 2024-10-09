@@ -101,4 +101,16 @@ public class StudyGroupDAO {
 
         return sessionFactory.getCurrentSession().createQuery(query).getResultList();
     }
+
+    @Transactional
+    public List<Object[]> getGroupCountById() {
+        CriteriaBuilder cb = sessionFactory.getCriteriaBuilder();
+        CriteriaQuery<Object[]> query = cb.createQuery(Object[].class);
+        Root<StudyGroup> root = query.from(StudyGroup.class);
+
+        query.multiselect(root.get("id"), cb.count(root))
+                .groupBy(root.get("id"));
+
+        return sessionFactory.getCurrentSession().createQuery(query).getResultList();
+    }
 }

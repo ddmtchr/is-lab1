@@ -6,6 +6,7 @@ import com.brigada.backend.domain.Location;
 import com.brigada.backend.domain.Person;
 import com.brigada.backend.domain.StudyGroup;
 import com.brigada.backend.dto.request.StudyGroupRequestDTO;
+import com.brigada.backend.dto.response.GroupCountByIdDTO;
 import com.brigada.backend.dto.response.StudyGroupResponseDTO;
 import com.brigada.backend.exception.NotFoundException;
 import com.brigada.backend.mapper.StudyGroupMapper;
@@ -87,5 +88,10 @@ public class StudyGroupService {
         return dao.searchByNamePrefix(prefix).stream()
                 .map(StudyGroupMapper.INSTANCE::toResponseDTO)
                 .collect(Collectors.toList());
+    }
+
+    public List<GroupCountByIdDTO> getGroupCountById() {
+        List<Object[]> list = dao.getGroupCountById();
+        return list.stream().map((Object[] o) -> new GroupCountByIdDTO((Integer) o[0], (Long) o[1])).collect(Collectors.toList());
     }
 }
