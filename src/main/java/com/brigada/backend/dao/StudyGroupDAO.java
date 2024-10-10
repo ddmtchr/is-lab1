@@ -14,10 +14,10 @@ import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
+@Transactional
 public class StudyGroupDAO {
     private final SessionFactory sessionFactory;
 
-    @Transactional
     public StudyGroup createStudyGroup(StudyGroup studyGroup) {
         Session session = sessionFactory.getCurrentSession();
         session.persist(studyGroup);
@@ -25,14 +25,12 @@ public class StudyGroupDAO {
         return studyGroup;
     }
 
-    @Transactional
     public Optional<StudyGroup> getStudyGroupById(int id) {
         Session session = sessionFactory.getCurrentSession();
         StudyGroup entity = session.get(StudyGroup.class, id);
         return Optional.ofNullable(entity);
     }
 
-    @Transactional
     public List<StudyGroup> getAllStudyGroups(int page, int size, String sortBy) {
         Session session = sessionFactory.getCurrentSession();
         CriteriaBuilder builder = session.getCriteriaBuilder();
@@ -46,13 +44,11 @@ public class StudyGroupDAO {
                 .getResultList();
     }
 
-    @Transactional
     public StudyGroup updateStudyGroup(StudyGroup entity) {
         Session session = sessionFactory.getCurrentSession();
         return session.merge(entity);
     }
 
-    @Transactional
     public void deleteStudyGroupById(int id) {
         Session session = sessionFactory.getCurrentSession();
         StudyGroup entity = session.find(StudyGroup.class, id);
@@ -61,13 +57,11 @@ public class StudyGroupDAO {
         }
     }
 
-    @Transactional
     public void deleteAll() {
         Session session = sessionFactory.getCurrentSession();
         session.createNativeMutationQuery("truncate table studygroup").executeUpdate();
     }
 
-    @Transactional
     public List<StudyGroup> getAll() {
         Session session = sessionFactory.getCurrentSession();
         CriteriaBuilder builder = session.getCriteriaBuilder();
@@ -77,7 +71,6 @@ public class StudyGroupDAO {
                 .getResultList();
     }
 
-    @Transactional
     public Long countExpelledStudents() {
         CriteriaBuilder cb = sessionFactory.getCriteriaBuilder();
         CriteriaQuery<Long> query = cb.createQuery(Long.class);
@@ -88,7 +81,6 @@ public class StudyGroupDAO {
         return sessionFactory.getCurrentSession().createQuery(query).getSingleResult();
     }
 
-    @Transactional
     public List<StudyGroup> searchByNamePrefix(String prefix) {
         CriteriaBuilder cb = sessionFactory.getCriteriaBuilder();
         CriteriaQuery<StudyGroup> query = cb.createQuery(StudyGroup.class);
@@ -100,7 +92,6 @@ public class StudyGroupDAO {
         return sessionFactory.getCurrentSession().createQuery(query).getResultList();
     }
 
-    @Transactional
     public List<Object[]> getGroupCountById() {
         CriteriaBuilder cb = sessionFactory.getCriteriaBuilder();
         CriteriaQuery<Object[]> query = cb.createQuery(Object[].class);
@@ -112,7 +103,6 @@ public class StudyGroupDAO {
         return sessionFactory.getCurrentSession().createQuery(query).getResultList();
     }
 
-    @Transactional
     public void deleteByShouldBeExpelled(Integer value) {
         CriteriaBuilder cb = sessionFactory.getCriteriaBuilder();
         CriteriaDelete<StudyGroup> delete = cb.createCriteriaDelete(StudyGroup.class);
