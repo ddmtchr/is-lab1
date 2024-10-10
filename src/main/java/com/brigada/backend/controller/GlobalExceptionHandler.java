@@ -1,6 +1,7 @@
 package com.brigada.backend.controller;
 
 import com.brigada.backend.exception.NotFoundException;
+import com.brigada.backend.exception.UsernameAlreadyExistsExpection;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<String> handleRuntimeException(RuntimeException ex) {
         return ResponseEntity.internalServerError().body(ex.getMessage());
+    }
+
+    @ExceptionHandler(UsernameAlreadyExistsExpection.class)
+    public ResponseEntity<String> handleUsernameAlreadyExistsExpection(UsernameAlreadyExistsExpection ex) {
+        return ResponseEntity.badRequest().body(ex.getMessage());
     }
 
     @ExceptionHandler(NotFoundException.class)

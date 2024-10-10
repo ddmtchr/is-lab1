@@ -3,6 +3,7 @@ package com.brigada.backend.controller;
 import com.brigada.backend.dto.request.LoginRequest;
 import com.brigada.backend.dto.request.RegisterRequest;
 import com.brigada.backend.dto.response.JwtResponse;
+import com.brigada.backend.exception.UsernameAlreadyExistsExpection;
 import com.brigada.backend.security.entity.Role;
 import com.brigada.backend.security.jwt.JwtUtils;
 import com.brigada.backend.security.entity.User;
@@ -36,14 +37,14 @@ public class AuthController {
     private final PasswordEncoder encoder;
 
     @PostMapping("/login")
-    public ResponseEntity<?> authenticateUser(@RequestBody @Valid LoginRequest request) {
+    public ResponseEntity<JwtResponse> authenticateUser(@RequestBody @Valid LoginRequest request) {
         return ResponseEntity.ok(generateJwtResponse(request.getUsername(), request.getPassword()));
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody @Valid RegisterRequest request) {
+    public ResponseEntity<JwtResponse> registerUser(@RequestBody @Valid RegisterRequest request) {
         if (userService.existsByUsername(request.getUsername())) {
-            return ResponseEntity.badRequest().body("Username already exists");
+            throw new UsernameAlreadyExistsExpection("Username already exists");
         }
         User user = new User(request.getUsername(), encoder.encode(request.getPassword()));
         Set<String> rolesString = request.getRoles();
