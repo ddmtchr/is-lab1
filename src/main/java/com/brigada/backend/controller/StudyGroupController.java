@@ -25,7 +25,7 @@ public class StudyGroupController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<StudyGroupResponseDTO> getStudyGroupById(@PathVariable int id) {
+    public ResponseEntity<StudyGroupResponseDTO> getStudyGroupById(@PathVariable Integer id) {
         return ResponseEntity.ok(studyGroupService.getStudyGroupById(id));
     }
 

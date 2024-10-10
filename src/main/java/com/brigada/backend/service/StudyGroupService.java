@@ -27,7 +27,7 @@ public class StudyGroupService {
         return StudyGroupMapper.INSTANCE.toResponseDTO(entity);
     }
 
-    public StudyGroupResponseDTO getStudyGroupById(int id) {
+    public StudyGroupResponseDTO getStudyGroupById(Integer id) {
         Optional<StudyGroup> optional = dao.getStudyGroupById(id);
         if (optional.isEmpty()) throw new NotFoundException();
         return StudyGroupMapper.INSTANCE.toResponseDTO(optional.get());

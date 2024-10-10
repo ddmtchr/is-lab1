@@ -5,7 +5,6 @@ import jakarta.persistence.criteria.*;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.query.QueryProducer;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,7 +24,7 @@ public class StudyGroupDAO {
         return studyGroup;
     }
 
-    public Optional<StudyGroup> getStudyGroupById(int id) {
+    public Optional<StudyGroup> getStudyGroupById(Integer id) {
         Session session = sessionFactory.getCurrentSession();
         StudyGroup entity = session.get(StudyGroup.class, id);
         return Optional.ofNullable(entity);

@@ -1,6 +1,5 @@
 package com.brigada.backend.security.jwt;
 
-import com.brigada.backend.security.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
