@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 public class GlobalExceptionHandler {
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<String> handleRuntimeException(RuntimeException ex) {
+        ex.printStackTrace();
         return ResponseEntity.internalServerError().body(ex.getMessage());
     }
 

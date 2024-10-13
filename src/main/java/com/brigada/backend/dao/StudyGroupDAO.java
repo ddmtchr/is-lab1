@@ -48,6 +48,11 @@ public class StudyGroupDAO {
         return session.merge(entity);
     }
 
+    public void deleteStudyGroup(StudyGroup entity) {
+        Session session = sessionFactory.getCurrentSession();
+        session.remove(entity);
+    }
+
     public void deleteStudyGroupById(int id) {
         Session session = sessionFactory.getCurrentSession();
         StudyGroup entity = session.find(StudyGroup.class, id);
@@ -56,7 +61,7 @@ public class StudyGroupDAO {
         }
     }
 
-    public void deleteAll() {
+    public void deleteAll() { // wtf doesnt work
         Session session = sessionFactory.getCurrentSession();
         session.createNativeMutationQuery("truncate table studygroup").executeUpdate();
     }
@@ -110,5 +115,29 @@ public class StudyGroupDAO {
         delete.where(cb.equal(root.get("shouldBeExpelled"), value));
 
         sessionFactory.getCurrentSession().createMutationQuery(delete).executeUpdate();
+    }
+
+    public long countGroupsByCoordinatesId(Long coordinatesId) {
+        Session session = sessionFactory.getCurrentSession();
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<Long> query = builder.createQuery(Long.class);
+        Root<StudyGroup> root = query.from(StudyGroup.class);
+
+        query.select(builder.count(root))
+                .where(builder.equal(root.get("coordinates").get("id"), coordinatesId));
+
+        return session.createQuery(query).getSingleResult();
+    }
+
+    public long countGroupsByAdminId(Long adminId) {
+        Session session = sessionFactory.getCurrentSession();
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<Long> query = builder.createQuery(Long.class);
+        Root<StudyGroup> root = query.from(StudyGroup.class);
+
+        query.select(builder.count(root))
+                .where(builder.equal(root.get("groupAdmin").get("id"), adminId));
+
+        return session.createQuery(query).getSingleResult();
     }
 }

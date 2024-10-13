@@ -34,4 +34,34 @@ public class CoordinatesDAO {
 
         return session.createQuery(query).getResultList();
     }
+
+    public void merge(Coordinates coordinates) {
+        Session session = sessionFactory.getCurrentSession();
+        session.merge(coordinates);
+        session.flush();
+    }
+
+    public void createCoordinates(Coordinates coordinates) {
+        Session session = sessionFactory.getCurrentSession();
+        session.persist(coordinates);
+        session.flush();
+    }
+
+    public Optional<Coordinates> findByXAndY(Integer x, Integer y) {
+        Session session = sessionFactory.getCurrentSession();
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<Coordinates> query = builder.createQuery(Coordinates.class);
+        Root<Coordinates> root = query.from(Coordinates.class);
+
+        query.select(root)
+                .where(builder.equal(root.get("x"), x),
+                        builder.equal(root.get("y"), y));
+
+        List<Coordinates> result = session.createQuery(query).getResultList();
+        return result.isEmpty() ? Optional.empty() : Optional.of(result.get(0));
+    }
+
+    public void deleteCoordinates(Coordinates coordinates) {
+        sessionFactory.getCurrentSession().remove(coordinates);
+    }
 }
