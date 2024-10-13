@@ -53,9 +53,4 @@ public class StudyGroupController {
 //        return ResponseEntity.ok(studyGroups);
 //    }
 
-//    @DeleteMapping("/expelled") TODO
-//    public ResponseEntity<Void> deleteByShouldBeExpelled(@RequestParam int shouldBeExpelled) {
-//        studyGroupService.deleteByShouldBeExpelled(shouldBeExpelled);
-//        return ResponseEntity.noContent().build();
-//    }
 }

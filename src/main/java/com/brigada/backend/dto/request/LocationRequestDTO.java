@@ -13,6 +13,7 @@ import java.util.Objects;
 @Getter
 @Setter
 public class LocationRequestDTO {
+    private Long id = null;
     private Long x;
     private float y;
     private Long z;

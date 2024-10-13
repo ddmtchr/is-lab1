@@ -17,6 +17,7 @@ import java.util.Objects;
 @Getter
 @Setter
 public class PersonRequestDTO {
+    private Long id = null;
     @NotBlank
     private String name;
     private Color eyeColor;

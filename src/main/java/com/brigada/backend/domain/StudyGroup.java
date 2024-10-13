@@ -26,7 +26,7 @@ public class StudyGroup {
     private String name;
 
     @JoinColumn(nullable = false, name = "coordinates_id")
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Coordinates coordinates;
 
     @Column(nullable = false, updatable = false)
@@ -57,7 +57,7 @@ public class StudyGroup {
     private Semester semesterEnum;
 
     @JoinColumn(nullable = true, name = "group_admin_id")
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Person groupAdmin;
 
     @PrePersist

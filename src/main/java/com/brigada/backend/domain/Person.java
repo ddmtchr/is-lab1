@@ -31,7 +31,7 @@ public class Person {
     private Color hairColor;
 
     @JoinColumn(nullable = true, name = "location_id")
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Location location;
 
     @Column(nullable = true)
