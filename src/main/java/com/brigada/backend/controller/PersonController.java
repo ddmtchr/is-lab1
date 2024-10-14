@@ -1,6 +1,7 @@
 package com.brigada.backend.controller;
 
 import com.brigada.backend.dto.response.PersonResponseDTO;
+import com.brigada.backend.security.jwt.JwtUtils;
 import com.brigada.backend.service.PersonService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,10 +18,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PersonController {
     private final PersonService personService;
+    private final JwtUtils jwtUtils;
 
     @GetMapping
     public ResponseEntity<List<PersonResponseDTO>> getAllPersons() {
-        return new ResponseEntity<>(personService.getAllPersons(), HttpStatus.OK);
+        String username = jwtUtils.getCurrentUser().getUsername();
+        return new ResponseEntity<>(personService.getAllPersonsByUser(username), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")

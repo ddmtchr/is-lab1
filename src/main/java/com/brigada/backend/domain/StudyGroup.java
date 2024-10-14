@@ -1,5 +1,6 @@
 package com.brigada.backend.domain;
 
+import com.brigada.backend.security.entity.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
@@ -59,6 +60,10 @@ public class StudyGroup {
     @JoinColumn(nullable = true, name = "group_admin_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private Person groupAdmin;
+
+    @JoinColumn(name = "user_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User createdBy;
 
     @PrePersist
     protected void onCreate() {

@@ -19,7 +19,7 @@ public class LocationService {
 
     public LocationResponseDTO getLocationById(Long id) {
         Optional<Location> optional = dao.getLocationById(id);
-        if (optional.isEmpty()) throw new NotFoundException();
+        if (optional.isEmpty()) throw new NotFoundException("Location doesn't exist");
         return LocationMapper.INSTANCE.toResponseDTO(optional.get());
     }
 

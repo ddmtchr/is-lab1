@@ -1,6 +1,7 @@
 package com.brigada.backend.dao;
 
 import com.brigada.backend.domain.Coordinates;
+import com.brigada.backend.security.entity.User;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
@@ -21,16 +22,35 @@ public class CoordinatesDAO {
 
     public Optional<Coordinates> getCoordinatesById(Long id) {
         Session session = sessionFactory.getCurrentSession();
-        Coordinates entity = session.get(Coordinates.class, id);
-        return Optional.ofNullable(entity);
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<Coordinates> query = builder.createQuery(Coordinates.class);
+        Root<Coordinates> root = query.from(Coordinates.class);
+
+        query.select(root).where(builder.equal(root.get("id"), id));
+
+        List<Coordinates> result = session.createQuery(query).getResultList();
+        return result.isEmpty() ? Optional.empty() : Optional.of(result.get(0));
     }
 
-    public List<Coordinates> getAllCoordinates() {
+    public Optional<Coordinates> getCoordinatesByIdAndUser(Long id, User user) {
         Session session = sessionFactory.getCurrentSession();
         CriteriaBuilder builder = session.getCriteriaBuilder();
         CriteriaQuery<Coordinates> query = builder.createQuery(Coordinates.class);
         Root<Coordinates> root = query.from(Coordinates.class);
-        query.select(root);
+
+        query.select(root).where(builder.equal(root.get("id"), id),
+                builder.equal(root.get("createdBy").get("id"), user.getId()));
+
+        List<Coordinates> result = session.createQuery(query).getResultList();
+        return result.isEmpty() ? Optional.empty() : Optional.of(result.get(0));
+    }
+
+    public List<Coordinates> getAllCoordinatesByUser(User user) {
+        Session session = sessionFactory.getCurrentSession();
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<Coordinates> query = builder.createQuery(Coordinates.class);
+        Root<Coordinates> root = query.from(Coordinates.class);
+        query.select(root).where(builder.equal(root.get("createdBy").get("id"), user.getId()));
 
         return session.createQuery(query).getResultList();
     }
@@ -47,7 +67,7 @@ public class CoordinatesDAO {
         session.flush();
     }
 
-    public Optional<Coordinates> findByXAndY(Integer x, Integer y) {
+    public Optional<Coordinates> findByXAndYAndUser(Integer x, Integer y, User user) {
         Session session = sessionFactory.getCurrentSession();
         CriteriaBuilder builder = session.getCriteriaBuilder();
         CriteriaQuery<Coordinates> query = builder.createQuery(Coordinates.class);
@@ -55,7 +75,8 @@ public class CoordinatesDAO {
 
         query.select(root)
                 .where(builder.equal(root.get("x"), x),
-                        builder.equal(root.get("y"), y));
+                        builder.equal(root.get("y"), y),
+                        builder.equal(root.get("createdBy").get("id"), user.getId()));
 
         List<Coordinates> result = session.createQuery(query).getResultList();
         return result.isEmpty() ? Optional.empty() : Optional.of(result.get(0));

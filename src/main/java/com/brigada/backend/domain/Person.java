@@ -1,5 +1,6 @@
 package com.brigada.backend.domain;
 
+import com.brigada.backend.security.entity.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
@@ -41,4 +42,8 @@ public class Person {
     @Column(nullable = true)
     @Enumerated(EnumType.STRING)
     private Country nationality;
+
+    @JoinColumn(name = "user_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User createdBy;
 }

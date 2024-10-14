@@ -14,5 +14,7 @@ public interface StudyGroupMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "creationDate", ignore = true)
     StudyGroup toEntity(StudyGroupRequestDTO requestDTO);
+
+    @Mapping(target = "createdBy", source = "createdBy.id")
     StudyGroupResponseDTO toResponseDTO(StudyGroup e);
 }
