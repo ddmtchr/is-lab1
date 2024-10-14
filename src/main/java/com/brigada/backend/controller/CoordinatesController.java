@@ -1,6 +1,7 @@
 package com.brigada.backend.controller;
 
 import com.brigada.backend.dto.response.CoordinatesResponseDTO;
+import com.brigada.backend.security.jwt.JwtUtils;
 import com.brigada.backend.service.CoordinatesService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,10 +18,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CoordinatesController {
     private final CoordinatesService coordinatesService;
+    private final JwtUtils jwtUtils;
 
     @GetMapping
     public ResponseEntity<List<CoordinatesResponseDTO>> getAllCoordinates() {
-        return new ResponseEntity<>(coordinatesService.getAllCoordinates(), HttpStatus.OK);
+        String username = jwtUtils.getCurrentUser().getUsername();
+        return new ResponseEntity<>(coordinatesService.getAllCoordinatesByUser(username), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")

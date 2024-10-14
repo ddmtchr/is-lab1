@@ -25,4 +25,5 @@ public class StudyGroupResponseDTO {
     private Integer shouldBeExpelled;
     private Semester semesterEnum;
     private PersonResponseDTO groupAdmin;
+    private Long createdBy;
 }

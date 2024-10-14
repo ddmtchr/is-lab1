@@ -1,6 +1,7 @@
 package com.brigada.backend.dao;
 
 import com.brigada.backend.domain.StudyGroup;
+import com.brigada.backend.security.entity.User;
 import jakarta.persistence.criteria.*;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
@@ -26,8 +27,25 @@ public class StudyGroupDAO {
 
     public Optional<StudyGroup> getStudyGroupById(Integer id) {
         Session session = sessionFactory.getCurrentSession();
-        StudyGroup entity = session.get(StudyGroup.class, id);
-        return Optional.ofNullable(entity);
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<StudyGroup> query = builder.createQuery(StudyGroup.class);
+        Root<StudyGroup> root = query.from(StudyGroup.class);
+        query.select(root).where(builder.equal(root.get("id"), id));
+
+        List<StudyGroup> list = session.createQuery(query).getResultList();
+        return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));
+    }
+
+    public Optional<StudyGroup> getStudyGroupByIdAndUser(Integer id, User user) {
+        Session session = sessionFactory.getCurrentSession();
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<StudyGroup> query = builder.createQuery(StudyGroup.class);
+        Root<StudyGroup> root = query.from(StudyGroup.class);
+        query.select(root).where(builder.equal(root.get("id"), id),
+                builder.equal(root.get("createdBy").get("id"), user.getId()));
+
+        List<StudyGroup> list = session.createQuery(query).getResultList();
+        return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));
     }
 
     public List<StudyGroup> getAllStudyGroups(int page, int size, String sortBy) {
@@ -70,6 +88,8 @@ public class StudyGroupDAO {
         Session session = sessionFactory.getCurrentSession();
         CriteriaBuilder builder = session.getCriteriaBuilder();
         CriteriaQuery<StudyGroup> query = builder.createQuery(StudyGroup.class);
+        Root<StudyGroup> root = query.from(StudyGroup.class);
+        query.select(root);
 
         return session.createQuery(query)
                 .getResultList();
@@ -107,36 +127,39 @@ public class StudyGroupDAO {
         return sessionFactory.getCurrentSession().createQuery(query).getResultList();
     }
 
-    public void deleteByShouldBeExpelled(Integer value) {
-        CriteriaBuilder cb = sessionFactory.getCriteriaBuilder();
-        CriteriaDelete<StudyGroup> delete = cb.createCriteriaDelete(StudyGroup.class);
+    public void deleteByShouldBeExpelled(Integer value, User user) {
+        CriteriaBuilder builder = sessionFactory.getCriteriaBuilder();
+        CriteriaDelete<StudyGroup> delete = builder.createCriteriaDelete(StudyGroup.class);
         Root<StudyGroup> root = delete.from(StudyGroup.class);
 
-        delete.where(cb.equal(root.get("shouldBeExpelled"), value));
+        delete.where(builder.equal(root.get("shouldBeExpelled"), value),
+                builder.equal(root.get("createdBy").get("id"), user.getId()));
 
         sessionFactory.getCurrentSession().createMutationQuery(delete).executeUpdate();
     }
 
-    public long countGroupsByCoordinatesId(Long coordinatesId) {
+    public long countGroupsByCoordinatesId(Long coordinatesId, User user) {
         Session session = sessionFactory.getCurrentSession();
         CriteriaBuilder builder = session.getCriteriaBuilder();
         CriteriaQuery<Long> query = builder.createQuery(Long.class);
         Root<StudyGroup> root = query.from(StudyGroup.class);
 
         query.select(builder.count(root))
-                .where(builder.equal(root.get("coordinates").get("id"), coordinatesId));
+                .where(builder.equal(root.get("coordinates").get("id"), coordinatesId),
+                        builder.equal(root.get("createdBy").get("id"), user.getId()));
 
         return session.createQuery(query).getSingleResult();
     }
 
-    public long countGroupsByAdminId(Long adminId) {
+    public long countGroupsByAdminId(Long adminId, User user) {
         Session session = sessionFactory.getCurrentSession();
         CriteriaBuilder builder = session.getCriteriaBuilder();
         CriteriaQuery<Long> query = builder.createQuery(Long.class);
         Root<StudyGroup> root = query.from(StudyGroup.class);
 
         query.select(builder.count(root))
-                .where(builder.equal(root.get("groupAdmin").get("id"), adminId));
+                .where(builder.equal(root.get("groupAdmin").get("id"), adminId),
+                        builder.equal(root.get("createdBy").get("id"), user.getId()));
 
         return session.createQuery(query).getSingleResult();
     }

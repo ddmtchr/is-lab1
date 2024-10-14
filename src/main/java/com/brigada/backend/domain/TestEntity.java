@@ -1,5 +1,6 @@
 package com.brigada.backend.domain;
 
+import com.brigada.backend.security.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,4 +19,8 @@ public class TestEntity {
 
     @Column
     private String name;
+
+    @JoinColumn(name = "user_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User creator;
 }

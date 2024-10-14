@@ -1,6 +1,7 @@
 package com.brigada.backend.dao;
 
 import com.brigada.backend.domain.Person;
+import com.brigada.backend.security.entity.User;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
@@ -23,16 +24,35 @@ public class PersonDAO {
 
     public Optional<Person> getPersonById(Long id) {
         Session session = sessionFactory.getCurrentSession();
-        Person entity = session.get(Person.class, id);
-        return Optional.ofNullable(entity);
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<Person> query = builder.createQuery(Person.class);
+        Root<Person> root = query.from(Person.class);
+
+        query.select(root).where(builder.equal(root.get("id"), id));
+
+        List<Person> result = session.createQuery(query).getResultList();
+        return result.isEmpty() ? Optional.empty() : Optional.of(result.get(0));
     }
 
-    public List<Person> getAllPersons() {
+    public Optional<Person> getPersonByIdAndUser(Long id, User user) {
         Session session = sessionFactory.getCurrentSession();
         CriteriaBuilder builder = session.getCriteriaBuilder();
         CriteriaQuery<Person> query = builder.createQuery(Person.class);
         Root<Person> root = query.from(Person.class);
-        query.select(root);
+
+        query.select(root).where(builder.equal(root.get("id"), id),
+                builder.equal(root.get("createdBy").get("id"), user.getId()));
+
+        List<Person> result = session.createQuery(query).getResultList();
+        return result.isEmpty() ? Optional.empty() : Optional.of(result.get(0));
+    }
+
+    public List<Person> getAllPersonsByUser(User user) {
+        Session session = sessionFactory.getCurrentSession();
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<Person> query = builder.createQuery(Person.class);
+        Root<Person> root = query.from(Person.class);
+        query.select(root).where(builder.equal(root.get("createdBy").get("id"), user.getId()));
 
         return session.createQuery(query).getResultList();
     }

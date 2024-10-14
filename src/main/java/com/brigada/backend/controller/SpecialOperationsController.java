@@ -2,6 +2,7 @@ package com.brigada.backend.controller;
 
 import com.brigada.backend.dto.response.GroupCountByIdDTO;
 import com.brigada.backend.dto.response.StudyGroupResponseDTO;
+import com.brigada.backend.security.jwt.JwtUtils;
 import com.brigada.backend.service.StudyGroupService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SpecialOperationsController {
     private final StudyGroupService studyGroupService;
+    private final JwtUtils jwtUtils;
 
     @GetMapping("/expelled")
     public ResponseEntity<Long> getAllExpelledStudents() {
@@ -33,13 +35,17 @@ public class SpecialOperationsController {
 
     @PutMapping("/expel/{id}")
     public ResponseEntity<Void> expelAllStudentsByGroup(@PathVariable Integer id) {
-        studyGroupService.expelAllStudentsByGroup(id);
+        String username = jwtUtils.getCurrentUser().getUsername();
+
+        studyGroupService.expelAllStudentsByGroup(id, username);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/delete-by-should-be-expelled")
     public ResponseEntity<Void> deleteByShouldBeExpelled(@RequestParam Integer value) {
-        studyGroupService.deleteByShouldBeExpelled(value);
+        String username = jwtUtils.getCurrentUser().getUsername();
+
+        studyGroupService.deleteByShouldBeExpelled(value, username);
         return ResponseEntity.noContent().build();
     }
 }
