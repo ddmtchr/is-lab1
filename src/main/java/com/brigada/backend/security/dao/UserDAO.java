@@ -28,6 +28,16 @@ public class UserDAO {
         return Optional.ofNullable(user);
     }
 
+    public Optional<User> findById(Long id) {
+        Session session = sessionFactory.getCurrentSession();
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<User> query = builder.createQuery(User.class);
+        Root<User> root = query.from(User.class);
+        query.select(root).where(builder.equal(root.get("id"), id));
+        User user = session.createQuery(query).uniqueResult();
+        return Optional.ofNullable(user);
+    }
+
     public boolean existsByUsername(String username) {
         Session session = sessionFactory.getCurrentSession();
         CriteriaBuilder builder = session.getCriteriaBuilder();
