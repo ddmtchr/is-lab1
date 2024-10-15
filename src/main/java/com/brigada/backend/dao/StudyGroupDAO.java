@@ -127,15 +127,26 @@ public class StudyGroupDAO {
         return sessionFactory.getCurrentSession().createQuery(query).getResultList();
     }
 
-    public void deleteByShouldBeExpelled(Integer value, User user) {
+    public List<Integer> deleteByShouldBeExpelled(Integer value, User user) {
+        Session session = sessionFactory.getCurrentSession();
         CriteriaBuilder builder = sessionFactory.getCriteriaBuilder();
+
+        CriteriaQuery<Integer> selectQuery = builder.createQuery(Integer.class);
+        Root<StudyGroup> root = selectQuery.from(StudyGroup.class);
+        selectQuery.select(root.get("id"))
+                .where(builder.equal(root.get("shouldBeExpelled"), value),
+                        builder.equal(root.get("createdBy").get("id"), user.getId()));
+
+        List<Integer> deletedGroupIds = session.createQuery(selectQuery).getResultList();
+
         CriteriaDelete<StudyGroup> delete = builder.createCriteriaDelete(StudyGroup.class);
-        Root<StudyGroup> root = delete.from(StudyGroup.class);
+        Root<StudyGroup> deleteRoot = delete.from(StudyGroup.class);
+        delete.where(builder.equal(deleteRoot.get("shouldBeExpelled"), value),
+                builder.equal(deleteRoot.get("createdBy").get("id"), user.getId()));
 
-        delete.where(builder.equal(root.get("shouldBeExpelled"), value),
-                builder.equal(root.get("createdBy").get("id"), user.getId()));
+        session.createMutationQuery(delete).executeUpdate();
 
-        sessionFactory.getCurrentSession().createMutationQuery(delete).executeUpdate();
+        return deletedGroupIds;
     }
 
     public long countGroupsByCoordinatesId(Long coordinatesId, User user) {

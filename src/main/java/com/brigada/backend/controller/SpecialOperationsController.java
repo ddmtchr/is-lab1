@@ -42,10 +42,9 @@ public class SpecialOperationsController {
     }
 
     @DeleteMapping("/delete-by-should-be-expelled")
-    public ResponseEntity<Void> deleteByShouldBeExpelled(@RequestParam Integer value) {
+    public ResponseEntity<List<Integer>> deleteByShouldBeExpelled(@RequestParam Integer value) {
         String username = jwtUtils.getCurrentUser().getUsername();
 
-        studyGroupService.deleteByShouldBeExpelled(value, username);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(studyGroupService.deleteByShouldBeExpelled(value, username));
     }
 }
