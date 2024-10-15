@@ -119,9 +119,9 @@ public class StudyGroupService {
                 .collect(Collectors.toList());
     }
 
-    public void deleteByShouldBeExpelled(Integer value, String username) {
+    public List<Integer> deleteByShouldBeExpelled(Integer value, String username) {
         User user = getUserByUsername(username);
-        dao.deleteByShouldBeExpelled(value, user);
+        return dao.deleteByShouldBeExpelled(value, user);
     }
 
     private void handleCoordinatesUpdate(StudyGroup entity, StudyGroupRequestDTO requestDTO, Coordinates existingCoordinates, User user) {
