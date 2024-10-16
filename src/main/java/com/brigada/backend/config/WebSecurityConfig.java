@@ -73,12 +73,13 @@ public class WebSecurityConfig {
                         .accessDeniedHandler(accessDeniedHandlerJwt))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth ->
-                                auth
-                                        .requestMatchers("/api/auth/**").permitAll()
-                                        .requestMatchers("/swagger-ui/**").permitAll()
-                                        .requestMatchers("/v3/api-docs/**").permitAll()
-                                        .requestMatchers("/swagger-ui.html").permitAll()
-                                        .anyRequest().authenticated()
+                        auth
+                                .requestMatchers("/api/auth/**").permitAll()
+                                .requestMatchers("/swagger-ui/**").permitAll()
+                                .requestMatchers("/v3/api-docs/**").permitAll()
+                                .requestMatchers("/swagger-ui.html").permitAll()
+                                .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
+                                .anyRequest().authenticated()
 //                                .anyRequest().permitAll()
                 );
 

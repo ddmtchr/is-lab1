@@ -42,7 +42,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<JwtResponse> registerUser(@RequestBody @Valid RegisterRequest request) {
+    public ResponseEntity<?> registerUser(@RequestBody @Valid RegisterRequest request) {
         if (userService.existsByUsername(request.getUsername())) {
             throw new UsernameAlreadyExistsExpection("Username already exists");
         }
@@ -50,8 +50,11 @@ public class AuthController {
         Set<String> rolesString = request.getRoles();
         Set<Role> roles = rolesString.stream().map(Role::valueOf).collect(Collectors.toSet());
         user.setRoles(roles);
-        userService.addUser(user);
-        return new ResponseEntity<>(generateJwtResponse(request.getUsername(), request.getPassword()), HttpStatus.CREATED);
+        boolean registered = userService.addUser(user);
+        if (registered) {
+            return new ResponseEntity<>(generateJwtResponse(request.getUsername(), request.getPassword()), HttpStatus.CREATED);
+        }
+        return new ResponseEntity<>("Wait until the admin accepts the application", HttpStatus.OK);
     }
 
     private JwtResponse generateJwtResponse(String username, String password) {

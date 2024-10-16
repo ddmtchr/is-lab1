@@ -54,11 +54,4 @@ public class StudyGroupController {
         studyGroupService.deleteStudyGroupById(id, username);
         return ResponseEntity.noContent().build();
     }
-
-//    @GetMapping("/search") TODO
-//    public ResponseEntity<List<StudyGroupResponseDTO>> searchStudyGroupsByName(@RequestParam String name) {
-//        List<StudyGroupResponseDTO> studyGroups = studyGroupService.searchStudyGroupsByName(name);
-//        return ResponseEntity.ok(studyGroups);
-//    }
-
 }

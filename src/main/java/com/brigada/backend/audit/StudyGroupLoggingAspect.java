@@ -2,14 +2,16 @@ package com.brigada.backend.audit;
 
 import com.brigada.backend.audit.dao.StudyGroupLogDAO;
 import com.brigada.backend.audit.entity.ActionType;
-import com.brigada.backend.domain.StudyGroup;
 import com.brigada.backend.audit.entity.StudyGroupLog;
-import com.brigada.backend.dto.request.StudyGroupRequestDTO;
+import com.brigada.backend.domain.StudyGroup;
 import com.brigada.backend.security.dao.UserDAO;
 import com.brigada.backend.security.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.annotation.*;
+import org.aspectj.lang.annotation.AfterReturning;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.stereotype.Component;
 
 import java.time.ZonedDateTime;

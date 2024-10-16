@@ -1,8 +1,10 @@
 package com.brigada.backend.security.dao;
 
+import com.brigada.backend.security.entity.Role;
 import com.brigada.backend.security.entity.User;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
@@ -52,5 +54,18 @@ public class UserDAO {
         Session session = sessionFactory.getCurrentSession();
         session.persist(user);
         session.flush();
+    }
+
+    public long countAdmins() {
+        Session session = sessionFactory.getCurrentSession();
+        CriteriaBuilder builder = sessionFactory.getCriteriaBuilder();
+        CriteriaQuery<Long> query = builder.createQuery(Long.class);
+        Root<User> root = query.from(User.class);
+
+        Join<User, Role> roles = root.join("roles");
+        query.select(builder.count(root))
+                .where(builder.equal(roles, Role.ADMIN));
+
+        return session.createQuery(query).getSingleResult();
     }
 }
