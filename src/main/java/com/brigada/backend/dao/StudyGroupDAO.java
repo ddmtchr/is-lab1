@@ -127,6 +127,19 @@ public class StudyGroupDAO {
         return sessionFactory.getCurrentSession().createQuery(query).getResultList();
     }
 
+    public List<StudyGroup> findByShouldBeExpelled(Integer value, User user) {
+        Session session = sessionFactory.getCurrentSession();
+        CriteriaBuilder builder = sessionFactory.getCriteriaBuilder();
+
+        CriteriaQuery<StudyGroup> selectQuery = builder.createQuery(StudyGroup.class);
+        Root<StudyGroup> root = selectQuery.from(StudyGroup.class);
+        selectQuery.select(root)
+                .where(builder.equal(root.get("shouldBeExpelled"), value),
+                        builder.equal(root.get("createdBy").get("id"), user.getId()));
+
+        return session.createQuery(selectQuery).getResultList();
+    }
+
     public List<Integer> deleteByShouldBeExpelled(Integer value, User user) {
         Session session = sessionFactory.getCurrentSession();
         CriteriaBuilder builder = sessionFactory.getCriteriaBuilder();

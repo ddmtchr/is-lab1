@@ -12,6 +12,7 @@ import com.brigada.backend.dto.request.PersonRequestDTO;
 import com.brigada.backend.dto.request.StudyGroupRequestDTO;
 import com.brigada.backend.dto.response.GroupCountByIdDTO;
 import com.brigada.backend.dto.response.StudyGroupResponseDTO;
+import com.brigada.backend.exception.NoPermissionException;
 import com.brigada.backend.exception.NotFoundException;
 import com.brigada.backend.mapper.CoordinatesMapper;
 import com.brigada.backend.mapper.LocationMapper;
@@ -36,6 +37,7 @@ public class StudyGroupService {
     private final PersonDAO personDAO;
     private final LocationDAO locationDAO;
     private final UserDAO userDAO;
+    private final PermissionService permissionService;
 
     public StudyGroupResponseDTO createStudyGroup(StudyGroupRequestDTO requestDTO, String username) {
         StudyGroup entity = StudyGroupMapper.INSTANCE.toEntity(requestDTO);
@@ -65,13 +67,15 @@ public class StudyGroupService {
     public StudyGroupResponseDTO updateStudyGroup(int id, StudyGroupRequestDTO requestDTO, String username) {
         User user = getUserByUsername(username);
 
-        StudyGroup existingEntity = dao.getStudyGroupByIdAndUser(id, user)
+        StudyGroup existingEntity = dao.getStudyGroupById(id)
                 .orElseThrow(() -> new NotFoundException("Study group doesn't exist"));
+
+        checkPermission(user, existingEntity);
 
         StudyGroup entity = StudyGroupMapper.INSTANCE.toEntity(requestDTO);
         entity.setId(id);
         entity.setCreationDate(existingEntity.getCreationDate());
-        entity.setCreatedBy(user);
+        entity.setCreatedBy(existingEntity.getCreatedBy());
 
         handleCoordinatesUpdate(entity, requestDTO, existingEntity.getCoordinates(), user);
         handleGroupAdminUpdate(entity, requestDTO, existingEntity.getGroupAdmin(), user);
@@ -82,10 +86,12 @@ public class StudyGroupService {
     public void deleteStudyGroupById(Integer id, String username) {
         User user = getUserByUsername(username);
 
-        StudyGroup studyGroup = dao.getStudyGroupByIdAndUser(id, user)
+        StudyGroup studyGroup = dao.getStudyGroupById(id)
                 .orElse(null);
 
         if (studyGroup == null) return;
+
+        checkPermission(user, studyGroup);
 
         dao.deleteStudyGroup(studyGroup);
 
@@ -100,8 +106,11 @@ public class StudyGroupService {
     public void expelAllStudentsByGroup(int id, String username) {
         User user = getUserByUsername(username);
 
-        StudyGroup studyGroup = dao.getStudyGroupByIdAndUser(id, user)
+        StudyGroup studyGroup = dao.getStudyGroupById(id)
                 .orElseThrow(() -> new NotFoundException("Study group doesn't exist"));
+
+        checkPermission(user, studyGroup);
+
         studyGroup.setExpelledStudents((long) studyGroup.getStudentsCount());
         dao.updateStudyGroup(studyGroup);
     }
@@ -241,6 +250,10 @@ public class StudyGroupService {
         if (admin != null && dao.countGroupsByAdminId(admin.getId(), user) == 0) {
             personDAO.deletePerson(admin);
         }
+    }
+
+    private void checkPermission(User user, StudyGroup studyGroup) {
+        if (!permissionService.canEditOrDelete(user, studyGroup)) throw new NoPermissionException("No permission to edit this object");
     }
 }
 

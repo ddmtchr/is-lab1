@@ -28,4 +28,5 @@ public class StudyGroupRequestDTO {
     private Integer shouldBeExpelled;
     private Semester semesterEnum;
     private PersonRequestDTO groupAdmin;
+    private boolean editableByAdmin;
 }

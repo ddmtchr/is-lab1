@@ -1,7 +1,8 @@
 package com.brigada.backend.controller;
 
+import com.brigada.backend.exception.NoPermissionException;
 import com.brigada.backend.exception.NotFoundException;
-import com.brigada.backend.exception.UsernameAlreadyExistsExpection;
+import com.brigada.backend.exception.UsernameAlreadyExistsException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,14 +26,19 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 
-    @ExceptionHandler(UsernameAlreadyExistsExpection.class)
-    public ResponseEntity<String> handleUsernameAlreadyExistsExpection(UsernameAlreadyExistsExpection ex) {
+    @ExceptionHandler(UsernameAlreadyExistsException.class)
+    public ResponseEntity<String> handleUsernameAlreadyExistsException(UsernameAlreadyExistsException ex) {
         return ResponseEntity.badRequest().body(ex.getMessage());
     }
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<String> handleNotFoundException(NotFoundException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(NoPermissionException.class)
+    public ResponseEntity<String> handleNoPermissionException(NoPermissionException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
