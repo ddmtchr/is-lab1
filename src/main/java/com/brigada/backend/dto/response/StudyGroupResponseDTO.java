@@ -26,4 +26,5 @@ public class StudyGroupResponseDTO {
     private Semester semesterEnum;
     private PersonResponseDTO groupAdmin;
     private Long createdBy;
+    private boolean editableByAdmin;
 }

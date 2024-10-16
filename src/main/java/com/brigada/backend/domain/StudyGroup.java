@@ -65,6 +65,9 @@ public class StudyGroup {
     @ManyToOne(fetch = FetchType.LAZY)
     private User createdBy;
 
+    @Column(nullable = false)
+    private boolean editableByAdmin;
+
     @PrePersist
     protected void onCreate() {
         creationDate = ZonedDateTime.now();
