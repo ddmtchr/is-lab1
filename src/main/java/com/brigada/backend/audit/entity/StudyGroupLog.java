@@ -1,7 +1,5 @@
 package com.brigada.backend.audit.entity;
 
-import com.brigada.backend.audit.entity.ActionType;
-import com.brigada.backend.domain.StudyGroup;
 import com.brigada.backend.security.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
