@@ -4,6 +4,7 @@ import com.brigada.backend.dto.request.StudyGroupRequestDTO;
 import com.brigada.backend.dto.response.StudyGroupResponseDTO;
 import com.brigada.backend.security.jwt.JwtUtils;
 import com.brigada.backend.service.StudyGroupService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -31,7 +32,8 @@ public class StudyGroupController {
         return ResponseEntity.ok(studyGroupService.getStudyGroupById(id));
     }
 
-    @PostMapping // ACHTUNG если передаешь id вложенных сущностей, он будет пытаться взять существующие, а не создать новые
+    @Operation(description = "ACHTUNG если передаешь id вложенных сущностей, он будет пытаться взять существующие, а не создать новые")
+    @PostMapping
     public ResponseEntity<StudyGroupResponseDTO> createStudyGroup(@Valid @RequestBody StudyGroupRequestDTO studyGroupRequestDTO) {
         String username = jwtUtils.getCurrentUser().getUsername();
 
