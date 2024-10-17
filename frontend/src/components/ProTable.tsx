@@ -1,13 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import {DataGrid, GridColDef, GridEventListener} from '@mui/x-data-grid';
 import DeleteIcon from '@mui/icons-material/Delete';
-import {Button} from '@mui/material';
+import {Button, CircularProgress} from '@mui/material';
 import {ruRU} from '@mui/x-data-grid/locales';
 import {Coordinates, FormOfEducation, Person, RowData, Semester} from "../interfaces.ts";
 import axiosInstance from "../axiosConfig.ts";
 import ObjectControlModal from "./reusable/ObjectControlModal.tsx";
-
-
 
 
 
@@ -19,7 +17,8 @@ const CollectionObjectsDataGrid: React.FC = () => {
     const [chosenObject, setChosenObject] = useState<RowData>()
 
     useEffect(() => {
-        axiosInstance.get('api/study-groups')
+        axiosInstance.get('api/study-groups', {
+        })
             .then((response) => {
 
                 console.log(response.data)
@@ -39,18 +38,16 @@ const CollectionObjectsDataGrid: React.FC = () => {
                 }));
 
 
-               setRows(rowData)
+                setRows(rowData)
                 setLoading(false)
             })
     }, [])
 
     if (loading) {
-        return <div>Loading...</div>; // Отображаем загрузку до получения данных
+        return <div><CircularProgress size={24} sx={{marginTop: 2, marginBottom: 2}} /></div>; // Отображаем загрузку до получения данных
     }
 
     const handleClickOpen: GridEventListener<'rowClick'> = (params) => {
-        // Получаем ID строки, на которую кликнули
-        console.log(params.row)
         setChosenObject(params.row);
         setOpen(true)
     };
@@ -79,7 +76,7 @@ const CollectionObjectsDataGrid: React.FC = () => {
         { field: 'id', headerName: 'ID', width: 90 },
         { field: 'name', headerName: 'Name', width: 150 },
         { field: 'coordinates', headerName: 'Coordinates', width: 150, renderCell: (params) => {
-            return `(${params.value.x}, ${params.value.y})`
+                return `(${params.value.x}, ${params.value.y})`
             } },
         { field: 'creationDate', headerName: 'Creation Date', width: 150, renderCell: (params) => {
                 return `${params.value.getDate().toString().padStart(2, '0')}.${params.value.getMonth() + 1}.${params.value.getFullYear()}`
@@ -91,7 +88,7 @@ const CollectionObjectsDataGrid: React.FC = () => {
         { field: 'shouldBeExpelled', headerName: 'shouldBeExpelled', width: 150 },
         { field: 'semesterEnum', headerName: 'Semester', width: 110 },
         { field: 'groupAdmin', headerName: 'Group admin', width: 110, renderCell: (params) => {
-            return params.value.name
+                return params.value.name
             } },
     ];
 

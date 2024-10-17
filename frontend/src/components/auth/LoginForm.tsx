@@ -1,20 +1,39 @@
 import React, {useState} from "react";
-import {Box, Button, TextField, Typography} from "@mui/material";
+import {Alert, Box, Button, Snackbar, TextField, Typography} from "@mui/material";
 import { useNavigate } from 'react-router-dom';
 import '../../styles/FormStyles.css'
+import axiosInstance from "../../axiosConfig.ts";
 
 
 const LoginForm: React.FC = () => {
     const [username, setUsername] = useState<string>('')
     const [password, setPassword] = useState<string>('')
-    const [error] = useState<string | null>(null)
+    const [error, setError] = useState(false)
     const navigate = useNavigate();
 
     const handleLogin = async (event: React.FormEvent) => {
         event.preventDefault()
 
-        navigate('/main-screen')
+        axiosInstance.post('api/auth/login', {
+            username: username,
+            password: password
+        })
+            .then((response) => {
+                if (response.status === 200) {
+                    localStorage.setItem('accessToken', response.data.jwt)
+                    navigate('/main-screen')
+                }
+            })
+            .catch((error) => {
+                setError(true)
+                console.log(error)
+            })
+
     }
+    const handleNotificationCLose = () => {
+        setError(false)
+    }
+
 
     return (
         <div className="form-container">
@@ -22,13 +41,14 @@ const LoginForm: React.FC = () => {
                 className="base-form"
                 component="form"
                 onSubmit={handleLogin}
-                sx={{ display: 'flex', flexDirection: 'column', gap: 2, width: '300px'}}
+                sx={{ display: 'flex', alignItems: 'center', flexDirection: 'column', gap: 2, width: '300px'}}
             >
-                <Typography variant="h5">Авторизация</Typography>
+                <Typography variant="h5">Authorization</Typography>
                 <TextField
-                    label="Имя пользователя"
+                    label="Usename"
                     variant="outlined"
                     value={username}
+                    autoComplete="username"
                     onChange={(e) => setUsername(e.target.value)}
                     sx={{
                         '& label': {
@@ -40,9 +60,10 @@ const LoginForm: React.FC = () => {
                     }}
                 />
                 <TextField
-                    label="Пароль"
+                    label="Password"
                     variant="outlined"
                     type="password"
+                    autoComplete="current-password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     sx={{
@@ -54,13 +75,28 @@ const LoginForm: React.FC = () => {
                         },
                     }}
                 />
-                {error && <Typography color="error">{error}</Typography>}
 
-                <Button variant="contained" type="submit">Войти</Button>
+                <Button variant="contained" disabled={(username.length <= 0) || (password.length <= 0)} type="submit">Login</Button>
 
-                <p style={{margin: 0}}>Еще нет аккаунта? <a className="redirect-link" onClick={() => navigate('/register')}>Зарегистрироваться</a></p>
+                <p style={{margin: 0}}>Don't have an account? <a className="redirect-link" onClick={() => navigate('/register')}>Register</a></p>
 
             </Box>
+
+            <Snackbar
+                open={error}
+                autoHideDuration={4000}
+                onClose={handleNotificationCLose}
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            >
+                <Alert
+                    onClose={handleNotificationCLose}
+                    severity="error"
+                    variant="filled"
+                    sx={{ width: '100%' }}
+                >
+                    Error with login! Check credentials and try again
+                </Alert>
+            </Snackbar>
         </div>
 
     )
