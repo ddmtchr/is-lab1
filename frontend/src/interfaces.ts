@@ -58,3 +58,15 @@ export interface Person {
     weight: number;
     nationality: Country;
 }
+
+
+export enum AccessRights {
+    USER = 'USER',
+    ADMIN = 'ADMIN'
+}
+
+export interface RegisterData {
+    username: string;
+    password: string;
+    roles: AccessRights[]
+}
