@@ -15,7 +15,6 @@ import {
 } from "@mui/material";
 import {ThemeProvider, createTheme} from '@mui/material/styles';
 import LogoutIcon from '@mui/icons-material/Logout';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import GroupRemoveIcon from '@mui/icons-material/GroupRemove';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import Diversity2Icon from '@mui/icons-material/Diversity2';
@@ -30,36 +29,6 @@ const darkTheme = createTheme({
         mode: 'dark',
     },
 });
-
-const createObject = () => {
-    axiosInstance.post('api/study-groups', {
-            "name": "string",
-            "coordinates": {
-                "x": 0,
-                "y": 0
-            },
-            "studentsCount": 5,
-            "expelledStudents": 2,
-            "transferredStudents": 2,
-            "formOfEducation": "DISTANCE_EDUCATION",
-            "shouldBeExpelled": 1,
-            "semesterEnum": "SECOND",
-            "groupAdmin": {
-                "name": "string",
-                "eyeColor": "YELLOW",
-                "hairColor": "YELLOW",
-                "location": {
-                    "x": 0,
-                    "y": 0,
-                    "z": 0,
-                    "name": "string"
-                },
-                "weight": 3,
-                "nationality": "RUSSIA"
-            }
-        }
-    )
-}
 
 
 
@@ -93,7 +62,7 @@ const MainScreen: React.FC = () => {
                     }})
                     .then((response) => {
                         console.log(response)
-                        if (response.status === 204) {
+                        if (response.status === 200) {
                             setSuccessRequest(true)
                             setResponseText(`Objects have been removed successfully!`)
                             setIsInformationalMessage(false)
@@ -262,14 +231,11 @@ const MainScreen: React.FC = () => {
 
             <ThemeProvider theme={darkTheme}>
 
-                <Button onClick={createObject} variant="contained" sx={{marginTop: 2, marginBottom: 2}}>
-                    <AddCircleOutlineIcon sx={{marginRight: 1}}/>
-                    Add group
-                </Button>
+
 
                 <CollectionObjectsDataGrid/>
 
-                <ButtonGroup size="large" aria-label="Large button group">
+                <ButtonGroup size="large" aria-label="Large button group" sx={{marginTop: 6, width: '90%'}}>
                     {buttons}
                 </ButtonGroup>
 

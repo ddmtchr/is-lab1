@@ -13,29 +13,29 @@ export interface RowData {
 }
 
 export enum FormOfEducation {
-    DISTANCE_EDUCATION,
-    FULL_TIME_EDUCATION,
-    EVENING_CLASSES
+    DISTANCE_EDUCATION = 'DISTANCE_EDUCATION',
+    FULL_TIME_EDUCATION = 'FULL_TIME_EDUCATION',
+    EVENING_CLASSES = 'EVENING_CLASSES',
 }
 
 export enum Semester {
-    SECOND,
-    THIRD,
-    FOURTH,
-    SIXTH,
-    EIGHTH
+    SECOND = 'SECOND',
+    THIRD = 'THIRD',
+    FOURTH = 'FOURTH',
+    SIXTH = 'SIXTH',
+    EIGHTH = 'EIGHTH'
 }
 export enum Color {
-    YELLOW,
-    ORANGE,
-    WHITE
+    YELLOW = "YELLOW",
+    ORANGE = "ORANGE",
+    WHITE = "WHITE"
 }
 
 export enum Country {
-    RUSSIA,
-    UNITED_KINGDOM,
-    CHINA,
-    INDIA
+    RUSSIA = "RUSSIA",
+    UNITED_KINGDOM = "UNITED_KINGDOM",
+    CHINA = "CHINA",
+    INDIA = "INDIA"
 }
 
 export interface Coordinates {

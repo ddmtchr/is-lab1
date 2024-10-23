@@ -6,7 +6,7 @@ import {ruRU} from '@mui/x-data-grid/locales';
 import {Coordinates, FormOfEducation, Person, RowData, Semester} from "../interfaces.ts";
 import axiosInstance from "../axiosConfig.ts";
 import ObjectControlModal from "./reusable/ObjectControlModal.tsx";
-
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
 
 const CollectionObjectsDataGrid: React.FC = () => {
@@ -15,13 +15,12 @@ const CollectionObjectsDataGrid: React.FC = () => {
     const [selectedRowIds, setSelectedRowIds] = useState<number[]>([]);
     const [open, setOpen] = useState(false)
     const [chosenObject, setChosenObject] = useState<RowData>()
+    const [isNewGroup, setIsNewGroup] = useState<boolean>(false)
 
-    useEffect(() => {
+    const fetchGroups = () => {
         axiosInstance.get('api/study-groups', {
         })
             .then((response) => {
-
-                console.log(response.data)
 
                 const rowData: RowData[] = response.data.map((item: any) => ({
                     id: item.id,
@@ -41,19 +40,34 @@ const CollectionObjectsDataGrid: React.FC = () => {
                 setRows(rowData)
                 setLoading(false)
             })
+    }
+
+    useEffect(() => {
+        fetchGroups()
+
+        // const intervalId = setInterval(fetchGroups, 2000)
+        //
+        // return () => clearInterval(intervalId)
     }, [])
 
     if (loading) {
-        return <div><CircularProgress size={24} sx={{marginTop: 2, marginBottom: 2}} /></div>; // Отображаем загрузку до получения данных
+        return <div><CircularProgress size={24} sx={{marginTop: 2, marginBottom: 2}} /></div>;
+    }
+
+    const createObject = () => {
+        setIsNewGroup(true)
+        setOpen(true)
     }
 
     const handleClickOpen: GridEventListener<'rowClick'> = (params) => {
         setChosenObject(params.row);
+        setIsNewGroup(false)
         setOpen(true)
     };
 
     const handleClose = () => {
         setOpen(false);
+        setIsNewGroup(false)
     };
 
 
@@ -65,6 +79,9 @@ const CollectionObjectsDataGrid: React.FC = () => {
     const handleDelete = () => {
         // Удаляем выбранные строки
         setRows((prevRows) => prevRows.filter((row) => !selectedRowIds.includes(row.id)));
+        selectedRowIds.forEach(rowId => {
+            axiosInstance.delete(`api/study-groups/${rowId}`)
+        })
         // Очищаем выбранные строки после удаления
         setSelectedRowIds([]);
     };
@@ -84,9 +101,9 @@ const CollectionObjectsDataGrid: React.FC = () => {
         { field: 'studentsCount', headerName: 'Students Count', width: 150 },
         { field: 'expelledStudents', headerName: 'expelledStudents', width: 150 },
         { field: 'transferredStudents', headerName: 'transferredStudents', width: 150 },
-        { field: 'formOfEducation', headerName: 'formOfEducation', width: 150 },
+        { field: 'formOfEducation', headerName: 'formOfEducation', width: 200 },
         { field: 'shouldBeExpelled', headerName: 'shouldBeExpelled', width: 150 },
-        { field: 'semesterEnum', headerName: 'Semester', width: 110 },
+        { field: 'semesterEnum', headerName: 'Semester', width: 130 },
         { field: 'groupAdmin', headerName: 'Group admin', width: 110, renderCell: (params) => {
                 return params.value.name
             } },
@@ -94,7 +111,31 @@ const CollectionObjectsDataGrid: React.FC = () => {
 
 
     return (
-        <div style={{ height: 400, width: '100%' }}>
+        <div style={{height: 400, width: '100%'}}>
+            <div style={{display: 'flex', flexDirection: 'row', gap: '10px', margin: '10px 5px'}}>
+                <Button onClick={createObject} variant="contained">
+                    <AddCircleOutlineIcon sx={{marginRight: 1}}/>
+                    Add group
+                </Button>
+                <div>
+                    {selectedRowIds.length !== 0 &&
+                        <><Button
+                            variant="outlined"
+                            color="primary"
+                            onClick={handleDelete}
+                            disabled={selectedRowIds.length === 0}
+                            title="Delete groups"
+                        >
+                            <DeleteIcon/>
+                        </Button>
+
+                        </>
+                    }
+
+                </div>
+            </div>
+
+
             <DataGrid
                 rows={rows}
                 columns={columns}
@@ -104,23 +145,11 @@ const CollectionObjectsDataGrid: React.FC = () => {
                 onRowClick={handleClickOpen}
                 localeText={ruRU.components.MuiDataGrid.defaultProps.localeText}
             />
-            <ObjectControlModal modalOpen={open} onModalCLose={handleClose} chosenObject={chosenObject}/>
-            <div>
-                {selectedRowIds.length !== 0 &&
-                    <><Button
-                        variant="contained"
-                        color="primary"
-                        onClick={handleDelete}
-                        disabled={selectedRowIds.length === 0}
-                        style={{marginTop: 10, marginLeft: 10}}
-                    >
-                        <DeleteIcon/>
-                    </Button>
 
-                    </>
-                }
-
-            </div>
+            {isNewGroup
+                ? <ObjectControlModal modalOpen={open} onModalCLose={handleClose} chosenObject={chosenObject} isNewGroup={isNewGroup}/>
+                : chosenObject && <ObjectControlModal modalOpen={open} onModalCLose={handleClose} chosenObject={chosenObject} isNewGroup={isNewGroup}/>
+            }
 
 
         </div>
