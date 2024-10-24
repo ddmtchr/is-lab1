@@ -15,6 +15,9 @@ import '../../styles/FormStyles.css'
 import {useNavigate} from "react-router-dom";
 import axiosInstance from "../../axiosConfig.ts";
 import {AccessRights, RegisterData} from "../../interfaces.ts";
+import {setUser} from "../../stores/userSlice.ts";
+import {useDispatch} from "react-redux";
+import {AppDispatch} from "../../stores/store.ts";
 
 const RegisterForm: React.FC = () => {
     const [username, setUsername] = useState<string>('')
@@ -25,6 +28,7 @@ const RegisterForm: React.FC = () => {
     const [confirmPassword, setConfirmPassword] = useState<string>('');
     const [errors, setErrors] = useState<{ password?: string; confirmPassword?: string }>({});
     const navigate = useNavigate()
+    const dispatch = useDispatch<AppDispatch>();
 
 
     const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -88,8 +92,13 @@ const RegisterForm: React.FC = () => {
             axiosInstance.post('api/auth/register', registerData)
                 .then((response) => {
                     if (response.status === 201) {
-                        console.log(response.data.jwt)
                         localStorage.setItem('accessToken', response.data.jwt)
+                        const fetchedUser = {
+                            id: response.data.id,
+                            roles: response.data.roles,
+                            username: response.data.username
+                        }
+                        dispatch(setUser(fetchedUser))
                         navigate('/main-screen')
                     }
 

@@ -3,7 +3,7 @@ import {DataGrid, GridColDef, GridEventListener} from '@mui/x-data-grid';
 import DeleteIcon from '@mui/icons-material/Delete';
 import {Button, CircularProgress} from '@mui/material';
 import {ruRU} from '@mui/x-data-grid/locales';
-import {Coordinates, FormOfEducation, Person, RowData, Semester} from "../interfaces.ts";
+import {AccessRights, Coordinates, FormOfEducation, Person, RowData, Semester} from "../interfaces.ts";
 import axiosInstance from "../axiosConfig.ts";
 import ObjectControlModal from "./reusable/ObjectControlModal.tsx";
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
@@ -40,7 +40,8 @@ const CollectionObjectsDataGrid: React.FC = () => {
                     shouldBeExpelled: item.shouldBeExpelled,
                     semesterEnum: item.semesterEnum as Semester, // Приведение к типу Semester
                     groupAdmin: item.groupAdmin as Person,
-                    createdBy: item.createdBy
+                    createdBy: item.createdBy,
+                    adminCanEdit: item.editableByAdmin
                 }));
 
 
@@ -51,7 +52,6 @@ const CollectionObjectsDataGrid: React.FC = () => {
 
     useEffect(() => {
         fetchGroups()
-
         // const intervalId = setInterval(fetchGroups, 2000)
         //
         // return () => clearInterval(intervalId)
@@ -80,12 +80,13 @@ const CollectionObjectsDataGrid: React.FC = () => {
 
 
     const handleSelectionChange = (newSelection: any) => {
+        console.log(newSelection)
         setSelectedRowIds(newSelection);
     };
 
     const handleDelete = () => {
         // Удаляем выбранные строки
-        setRows((prevRows) => prevRows.filter((row) => !selectedRowIds.includes(row.id)));
+        setRows((prevRows) => prevRows.filter((row) => !selectedRowIds.includes(row.id) || !checkEditRights(row)));
         selectedRowIds.forEach(rowId => {
             axiosInstance.delete(`api/study-groups/${rowId}`)
         })
@@ -99,6 +100,10 @@ const CollectionObjectsDataGrid: React.FC = () => {
 
     const handleNotificationClose = () => {
         setRequestError(false)
+    }
+
+    const checkEditRights = (item: RowData) => {
+        return (AccessRights.ADMIN in user.roles && item.adminCanEdit) || (item.createdBy === user.id)
     }
 
     const columns: GridColDef[] = [
@@ -163,8 +168,23 @@ const CollectionObjectsDataGrid: React.FC = () => {
             />
 
             {isNewGroup
-                ? <ObjectControlModal modalOpen={open} onModalCLose={handleClose} chosenObject={chosenObject} isNewGroup={isNewGroup} onSendError={handleRequestError}/>
-                : chosenObject && <ObjectControlModal modalOpen={open} onModalCLose={handleClose} chosenObject={chosenObject} isNewGroup={isNewGroup} onSendError={handleRequestError}/>
+                ? <ObjectControlModal
+                    modalOpen={open}
+                    onModalCLose={handleClose}
+                    chosenObject={chosenObject}
+                    isNewGroup={isNewGroup}
+                    onSendError={handleRequestError}
+                    readonlyForCurrentUser={false}
+                />
+                : chosenObject &&
+                <ObjectControlModal
+                    modalOpen={open}
+                    onModalCLose={handleClose}
+                    chosenObject={chosenObject}
+                    isNewGroup={isNewGroup}
+                    onSendError={handleRequestError}
+                    readonlyForCurrentUser={!checkEditRights(chosenObject)}
+                />
             }
 
             <Notification openCondition={requestError} onNotificationClose={handleNotificationClose} severity="error" responseText="Operation on object failed, try again"/>

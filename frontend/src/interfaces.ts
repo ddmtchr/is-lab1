@@ -10,6 +10,8 @@ export interface RowData {
     shouldBeExpelled: number;
     semesterEnum: Semester;
     groupAdmin: Person;
+    createdBy: number;
+    adminCanEdit: boolean
 }
 
 export enum FormOfEducation {
@@ -39,11 +41,13 @@ export enum Country {
 }
 
 export interface Coordinates {
+    id: number;
     x: number;
     y: number;
 }
 
 export interface Location {
+    id: number;
     x: number;
     y: number;
     z: number;
@@ -51,6 +55,7 @@ export interface Location {
 }
 
 export interface Person {
+    id: number;
     name: string;
     eyeColor: Color;
     hairColor: Color;
