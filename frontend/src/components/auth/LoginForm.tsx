@@ -1,8 +1,12 @@
 import React, {useState} from "react";
-import {Alert, Box, Button, Snackbar, TextField, Typography} from "@mui/material";
+import {Box, Button, TextField, Typography} from "@mui/material";
 import { useNavigate } from 'react-router-dom';
 import '../../styles/FormStyles.css'
 import axiosInstance from "../../axiosConfig.ts";
+import {useDispatch} from "react-redux";
+import {AppDispatch} from "../../stores/store.ts";
+import {setUser} from "../../stores/userSlice.ts";
+import Notification from "../reusable/Notification.tsx";
 
 
 const LoginForm: React.FC = () => {
@@ -10,6 +14,8 @@ const LoginForm: React.FC = () => {
     const [password, setPassword] = useState<string>('')
     const [error, setError] = useState(false)
     const navigate = useNavigate();
+
+    const dispatch = useDispatch<AppDispatch>();
 
     const handleLogin = async (event: React.FormEvent) => {
         event.preventDefault()
@@ -21,6 +27,12 @@ const LoginForm: React.FC = () => {
             .then((response) => {
                 if (response.status === 200) {
                     localStorage.setItem('accessToken', response.data.jwt)
+                    const fetchedUser = {
+                        id: response.data.id,
+                        roles: response.data.roles,
+                        username: response.data.username
+                    }
+                    dispatch(setUser(fetchedUser))
                     navigate('/main-screen')
                 }
             })
@@ -82,21 +94,13 @@ const LoginForm: React.FC = () => {
 
             </Box>
 
-            <Snackbar
-                open={error}
-                autoHideDuration={4000}
-                onClose={handleNotificationCLose}
-                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-            >
-                <Alert
-                    onClose={handleNotificationCLose}
-                    severity="error"
-                    variant="filled"
-                    sx={{ width: '100%' }}
-                >
-                    Error with login! Check credentials and try again
-                </Alert>
-            </Snackbar>
+            <Notification
+                openCondition={error}
+                onNotificationClose={handleNotificationCLose}
+                severity="error"
+                responseText="Error with login! Check credentials and try again"
+                />
+
         </div>
 
     )

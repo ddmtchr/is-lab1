@@ -1,14 +1,13 @@
 import React, {useState} from "react";
 import CollectionObjectsDataGrid from "./ProTable.tsx";
 import {
-    Alert,
     AppBar,
     Box,
     Button,
     ButtonGroup,
     Dialog, DialogActions, DialogContent,
     DialogTitle,
-    IconButton, Snackbar,
+    IconButton,
     TextField,
     Toolbar,
     Typography
@@ -20,9 +19,12 @@ import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import Diversity2Icon from '@mui/icons-material/Diversity2';
 import AccessibleIcon from '@mui/icons-material/Accessible';
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
-import CloseIcon from '@mui/icons-material/Close';
 import {useNavigate} from "react-router-dom";
 import axiosInstance from "../axiosConfig.ts";
+import {useDispatch, useSelector} from "react-redux";
+import {AppDispatch, RootState} from "../stores/store.ts";
+import {clearUser} from "../stores/userSlice.ts";
+import Notification from "./reusable/Notification.tsx";
 
 const darkTheme = createTheme({
     palette: {
@@ -46,6 +48,10 @@ const MainScreen: React.FC = () => {
     const [openIndex, setOpenIndex] = useState<number>()
 
     const navigate = useNavigate()
+
+    const dispatch = useDispatch<AppDispatch>();
+
+    const user = useSelector((state: RootState) => state.user);
 
     const defaultResponseErrorMessage = 'Request error, something went wrong...(('
 
@@ -186,18 +192,7 @@ const MainScreen: React.FC = () => {
         setSubstringToSearch(inputValue);
     };
 
-    const action = (
-        <React.Fragment>
-            <IconButton
-                size="small"
-                aria-label="close"
-                color="inherit"
-                onClick={handleNotificationCLose}
-            >
-                <CloseIcon fontSize="small" />
-            </IconButton>
-        </React.Fragment>
-    );
+
 
 
     const buttons = [
@@ -209,151 +204,133 @@ const MainScreen: React.FC = () => {
     ];
 
     return (
-        <Box sx={{flexGrow: 1, minWidth: '100vw'}}>
-            <AppBar position="static" sx={{textAlign: 'center'}}>
-                <Toolbar>
-                    <Typography variant="h6" component="div" sx={{flexGrow: 1}}>
-                        Current user: писька
-                    </Typography>
-                    <IconButton
-                        size="large"
-                        edge="start"
-                        color="inherit"
-                        aria-label="menu"
-                        title="Logout"
-                        onClick={() => navigate('/login')}
-                    >
-                        <LogoutIcon/>
-                    </IconButton>
-                    {/*<Button color="inherit">Login</Button>*/}
-                </Toolbar>
-            </AppBar>
 
-            <ThemeProvider theme={darkTheme}>
+                <Box sx={{flexGrow: 1, minWidth: '100vw'}}>
+                    <AppBar position="static" sx={{textAlign: 'center'}}>
+                        <Toolbar>
+                            <Typography variant="h6" component="div" sx={{flexGrow: 1}}>
+                                Welcome, user {user.username ? user.username : 'Unidentified jackal'}!
+                            </Typography>
+                            <IconButton
+                                size="large"
+                                edge="start"
+                                color="inherit"
+                                aria-label="menu"
+                                title="Logout"
+                                onClick={() => {
+                                    dispatch(clearUser())
+                                    localStorage.removeItem('accessToken')
+                                    navigate('/login')
+                                }}
+                            >
+                                <LogoutIcon/>
+                            </IconButton>
+                            {/*<Button color="inherit">Login</Button>*/}
+                        </Toolbar>
+                    </AppBar>
 
+                    <ThemeProvider theme={darkTheme}>
 
-
-                <CollectionObjectsDataGrid/>
+                        <CollectionObjectsDataGrid/>
 
                 <ButtonGroup size="large" aria-label="Large button group" sx={{marginTop: 6, width: '90%'}}>
                     {buttons}
                 </ButtonGroup>
 
-                <Snackbar
-                    open={successRequest}
-                    autoHideDuration={6000}
-                    onClose={handleNotificationCLose}
-                    action={action}
-                    anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-                >
-                    <Alert
-                        onClose={handleNotificationCLose}
-                        severity={isInformationalMessage ? "info": "success"}
-                        variant="filled"
-                        sx={{ width: '100%' }}
-                    >
-                        <span dangerouslySetInnerHTML={{__html: responseText}}/>
-                    </Alert>
-                </Snackbar>
 
-                <Dialog open={openIndex === 1} onClose={() => setOpenIndex(0)}>
-                    <DialogTitle>Remove all groups with shouldBeExpelled value = </DialogTitle>
-                    <DialogContent>
-                        <TextField
-                            required
-                            label="shouldBeExpelled value"
-                            type="number"
-                            value={intModalValue}
-                            onChange={handleIntModalValueChange}
-                            error={validationError}
-                            helperText={helperText}
-                            sx={{marginTop: 2, width: '100%'}}
-                        ></TextField>
-                    </DialogContent>
+                    <Notification
+                        onNotificationClose={handleNotificationCLose}
+                        openCondition={successRequest}
+                        responseText={responseText}
+                        severity={isInformationalMessage ? 'info' : 'success'}
+                    />
 
-                    <DialogActions>
-                        <Button
-                            disabled={validationError}
-                            onClick={() => handleSpecialActionButtonClick(1)}
-                        >
-                            Delete
-                        </Button>
-                    </DialogActions>
+                        <Dialog open={openIndex === 1} onClose={() => setOpenIndex(0)}>
+                            <DialogTitle>Remove all groups with shouldBeExpelled value = </DialogTitle>
+                            <DialogContent>
+                                <TextField
+                                    required
+                                    label="shouldBeExpelled value"
+                                    type="number"
+                                    value={intModalValue}
+                                    onChange={handleIntModalValueChange}
+                                    error={validationError}
+                                    helperText={helperText}
+                                    sx={{marginTop: 2, width: '100%'}}
+                                ></TextField>
+                            </DialogContent>
 
-                </Dialog>
+                            <DialogActions>
+                                <Button
+                                    disabled={validationError}
+                                    onClick={() => handleSpecialActionButtonClick(1)}
+                                >
+                                    Delete
+                                </Button>
+                            </DialogActions>
 
-                <Dialog open={openIndex === 3} onClose={() => {setOpenIndex(0); setSubstringToSearch('')}}>
-                    <DialogTitle>Enter substring for search</DialogTitle>
-                    <DialogContent>
-                        <TextField
-                            required
-                            label="Seach string"
-                            value={substringToSearch}
-                            onChange={handleSubstringChange}
-                            sx={{marginTop: 2}}
-                        ></TextField>
-                    </DialogContent>
+                        </Dialog>
 
-                    <DialogActions>
-                        <Button
-                            disabled={substringToSearch.length < 1}
-                            onClick={() => handleSpecialActionButtonClick(3)}
-                        >
-                            Search
-                        </Button>
-                    </DialogActions>
+                        <Dialog open={openIndex === 3} onClose={() => {setOpenIndex(0); setSubstringToSearch('')}}>
+                            <DialogTitle>Enter substring for search</DialogTitle>
+                            <DialogContent>
+                                <TextField
+                                    required
+                                    label="Seach string"
+                                    value={substringToSearch}
+                                    onChange={handleSubstringChange}
+                                    sx={{marginTop: 2}}
+                                ></TextField>
+                            </DialogContent>
 
-                </Dialog>
+                            <DialogActions>
+                                <Button
+                                    disabled={substringToSearch.length < 1}
+                                    onClick={() => handleSpecialActionButtonClick(3)}
+                                >
+                                    Search
+                                </Button>
+                            </DialogActions>
 
-                <Dialog open={openIndex === 4} onClose={() => setOpenIndex(0)}>
-                    <DialogTitle>Enter Group ID to expel students</DialogTitle>
-                    <DialogContent>
-                        <TextField
-                            required
-                            label="Group ID"
-                            type="number"
-                            value={intModalValue}
-                            onChange={handleIntModalValueChange}
-                            error={validationError}
-                            helperText={helperText}
-                            sx={{marginTop: 2}}
-                        ></TextField>
-                    </DialogContent>
+                        </Dialog>
 
-                    <DialogActions>
-                        <Button
-                            disabled={validationError}
-                            onClick={() => handleSpecialActionButtonClick(4)}
-                        >
-                            Expel
-                        </Button>
-                    </DialogActions>
+                        <Dialog open={openIndex === 4} onClose={() => setOpenIndex(0)}>
+                            <DialogTitle>Enter Group ID to expel students</DialogTitle>
+                            <DialogContent>
+                                <TextField
+                                    required
+                                    label="Group ID"
+                                    type="number"
+                                    value={intModalValue}
+                                    onChange={handleIntModalValueChange}
+                                    error={validationError}
+                                    helperText={helperText}
+                                    sx={{marginTop: 2}}
+                                ></TextField>
+                            </DialogContent>
 
-                </Dialog>
+                            <DialogActions>
+                                <Button
+                                    disabled={validationError}
+                                    onClick={() => handleSpecialActionButtonClick(4)}
+                                >
+                                    Expel
+                                </Button>
+                            </DialogActions>
 
-                <Snackbar
-                    open={requestError}
-                    autoHideDuration={6000}
-                    onClose={handleNotificationCLose}
-                    action={action}
-                    anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-                >
-                    <Alert
-                        onClose={handleNotificationCLose}
-                        severity="error"
-                        variant="filled"
-                        sx={{ width: '100%' }}
-                    >
-                        {responseText}
-                    </Alert>
-                </Snackbar>
+                        </Dialog>
 
 
+                        <Notification
+                            onNotificationClose={handleNotificationCLose}
+                            openCondition={requestError}
+                            responseText={responseText}
+                            severity="error"
+                        />
+                </ThemeProvider>
 
-            </ThemeProvider>
 
-
-        </Box>
+</Box>
 
 
     );

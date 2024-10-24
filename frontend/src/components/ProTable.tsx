@@ -7,6 +7,9 @@ import {Coordinates, FormOfEducation, Person, RowData, Semester} from "../interf
 import axiosInstance from "../axiosConfig.ts";
 import ObjectControlModal from "./reusable/ObjectControlModal.tsx";
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import {useSelector} from "react-redux";
+import {RootState} from "../stores/store.ts";
+import Notification from "./reusable/Notification.tsx";
 
 
 const CollectionObjectsDataGrid: React.FC = () => {
@@ -16,6 +19,9 @@ const CollectionObjectsDataGrid: React.FC = () => {
     const [open, setOpen] = useState(false)
     const [chosenObject, setChosenObject] = useState<RowData>()
     const [isNewGroup, setIsNewGroup] = useState<boolean>(false)
+    const [requestError, setRequestError] = useState<boolean>(false)
+
+    const user = useSelector((state: RootState) => state.user);
 
     const fetchGroups = () => {
         axiosInstance.get('api/study-groups', {
@@ -33,7 +39,8 @@ const CollectionObjectsDataGrid: React.FC = () => {
                     formOfEducation: item.formOfEducation as FormOfEducation, // Приведение к типу FormOfEducation
                     shouldBeExpelled: item.shouldBeExpelled,
                     semesterEnum: item.semesterEnum as Semester, // Приведение к типу Semester
-                    groupAdmin: item.groupAdmin as Person, // Приведение к типу Person
+                    groupAdmin: item.groupAdmin as Person,
+                    createdBy: item.createdBy
                 }));
 
 
@@ -86,8 +93,13 @@ const CollectionObjectsDataGrid: React.FC = () => {
         setSelectedRowIds([]);
     };
 
+    const handleRequestError = () => {
+        setRequestError(true)
+    }
 
-
+    const handleNotificationClose = () => {
+        setRequestError(false)
+    }
 
     const columns: GridColDef[] = [
         { field: 'id', headerName: 'ID', width: 90 },
@@ -103,10 +115,14 @@ const CollectionObjectsDataGrid: React.FC = () => {
         { field: 'transferredStudents', headerName: 'transferredStudents', width: 150 },
         { field: 'formOfEducation', headerName: 'formOfEducation', width: 200 },
         { field: 'shouldBeExpelled', headerName: 'shouldBeExpelled', width: 150 },
-        { field: 'semesterEnum', headerName: 'Semester', width: 130 },
+        { field: 'semesterEnum', headerName: 'Semester', width: 95 },
         { field: 'groupAdmin', headerName: 'Group admin', width: 110, renderCell: (params) => {
                 return params.value.name
             } },
+
+        { field: 'createdBy', headerName: 'createdBy', width: 90, renderCell: (params) => {
+            return params.value === user.id ? `${params.value} (You)` : params.value
+            } }
     ];
 
 
@@ -147,9 +163,11 @@ const CollectionObjectsDataGrid: React.FC = () => {
             />
 
             {isNewGroup
-                ? <ObjectControlModal modalOpen={open} onModalCLose={handleClose} chosenObject={chosenObject} isNewGroup={isNewGroup}/>
-                : chosenObject && <ObjectControlModal modalOpen={open} onModalCLose={handleClose} chosenObject={chosenObject} isNewGroup={isNewGroup}/>
+                ? <ObjectControlModal modalOpen={open} onModalCLose={handleClose} chosenObject={chosenObject} isNewGroup={isNewGroup} onSendError={handleRequestError}/>
+                : chosenObject && <ObjectControlModal modalOpen={open} onModalCLose={handleClose} chosenObject={chosenObject} isNewGroup={isNewGroup} onSendError={handleRequestError}/>
             }
+
+            <Notification openCondition={requestError} onNotificationClose={handleNotificationClose} severity="error" responseText="Operation on object failed, try again"/>
 
 
         </div>

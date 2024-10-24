@@ -19,10 +19,11 @@ interface ModalProps {
     onModalCLose: (open: boolean) => void;
     chosenObject?: RowData | undefined,
     isNewGroup: boolean;
+    onSendError: () => void
 }
 
 
-const ObjectControlModal: React.FC<ModalProps> = ({modalOpen, onModalCLose, chosenObject, isNewGroup}) => {
+const ObjectControlModal: React.FC<ModalProps> = ({modalOpen, onModalCLose, chosenObject, isNewGroup, onSendError}) => {
 
     const [name, setName] = useState<string | undefined>(chosenObject?.name);
     const [coordinates, setCoordinates] = useState<Coordinates | undefined>(chosenObject?.coordinates);
@@ -33,7 +34,6 @@ const ObjectControlModal: React.FC<ModalProps> = ({modalOpen, onModalCLose, chos
     const [shouldBeExpelled, setShouldBeExpelled] = useState<number | undefined>(chosenObject?.shouldBeExpelled);
     const [semesterEnum, setSemesterEnum] = useState<Semester | undefined>(chosenObject?.semesterEnum);
     const [groupAdmin, setGroupAdmin] = useState<Person | undefined>(chosenObject?.groupAdmin);
-
 
 
     const handleClose = () => {
@@ -73,12 +73,15 @@ const ObjectControlModal: React.FC<ModalProps> = ({modalOpen, onModalCLose, chos
 
         if (isNewGroup) {
             await axiosInstance.post('api/study-groups', requestData)
+                .catch(() => {onSendError()})
             onModalCLose(false)
         } else {
             await axiosInstance.put(`api/study-groups/${chosenObject?.id}`, requestData)
+                .catch(() => {onSendError()})
             onModalCLose(false)
         }
     }
+
 
     const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setName(event.target.value);
