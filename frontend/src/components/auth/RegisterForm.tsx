@@ -91,7 +91,7 @@ const RegisterForm: React.FC = () => {
         if (!errors.password && !errors.confirmPassword) {
             axiosInstance.post('api/auth/register', registerData)
                 .then((response) => {
-                    if (response.status === 200) {
+                    if (response.status === 201 || response.status === 200) {
                         localStorage.setItem('accessToken', response.data.jwt)
                         const fetchedUser = {
                             id: response.data.id,

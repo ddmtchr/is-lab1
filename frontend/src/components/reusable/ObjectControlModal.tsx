@@ -3,7 +3,7 @@ import {
     Button,
     Dialog,
     DialogContent,
-    DialogTitle, FormControl, FormControlLabel, FormHelperText,
+    DialogTitle, FormControl, FormControlLabel,
     InputLabel,
     MenuItem,
     Select, SelectChangeEvent, Stack, Switch,
@@ -37,7 +37,6 @@ const ObjectControlModal: React.FC<ModalProps> = ({modalOpen, onModalCLose, chos
     const [shouldBeExpelled, setShouldBeExpelled] = useState<number | undefined>(chosenObject?.shouldBeExpelled);
     const [semesterEnum, setSemesterEnum] = useState<Semester | undefined>(chosenObject?.semesterEnum);
     const [groupAdmin, setGroupAdmin] = useState<Person | undefined>(chosenObject?.groupAdmin);
-    const [adminLocation, setAdminLocation] = useState<Location | undefined>(chosenObject?.groupAdmin.location)
     const [adminCanEdit, setAdminCanEdit] = useState<boolean | undefined>(chosenObject?.adminCanEdit)
 
     const [requestError, setRequestError] = useState<boolean>(false)
@@ -47,8 +46,10 @@ const ObjectControlModal: React.FC<ModalProps> = ({modalOpen, onModalCLose, chos
     const [selectExistingLocations, setSelectExistingLocations] = useState<boolean>(false)
     const [selectExistingAdmins, setSelectExistingAdmins] = useState<boolean>(false)
 
-    const [errors, setErrors] = useState<{ stringError?: string; numberError?: string; compareError?: string }>({});
-    const [errorIndex, setErrorIndex] = useState<number>()
+    const [errors, setErrors] = useState<{ stringError?: string; numberError?: string; studentsCountError?: string;
+        expelledStudentsError?: string;
+        transferredStudentsError?: string;
+        shouldBeExpelledError?: string}>({});
 
 
     useEffect(() => {
@@ -73,8 +74,14 @@ const ObjectControlModal: React.FC<ModalProps> = ({modalOpen, onModalCLose, chos
         setSelectExistingCoordinates(false)
         setSelectExistingAdmins(false)
         setSelectExistingLocations(false)
-        setErrorIndex(-1)
-        setErrors((prevErrors) => ({ ...prevErrors, numberError: undefined, compareError: undefined, stringError: undefined }));
+        setErrors((prevErrors) => ({ ...prevErrors,
+            numberError: undefined,
+            stringError: undefined,
+            studentsCountError: undefined,
+            expelledStudentsError: undefined,
+            transferredStudentsError: undefined,
+            shouldBeExpelledError: undefined
+        }));
         onModalCLose()
     }
 
@@ -103,11 +110,11 @@ const ObjectControlModal: React.FC<ModalProps> = ({modalOpen, onModalCLose, chos
                 "eyeColor": groupAdmin?.eyeColor,
                 "hairColor": groupAdmin?.hairColor,
                 "location": {
-                    ...(selectExistingLocations ? { id: adminLocation?.id } : {}),
-                    "x": adminLocation?.x,
-                    "y": adminLocation?.y,
-                    "z": adminLocation?.z,
-                    "name": adminLocation?.name
+                    ...(selectExistingLocations ? { id: groupAdmin?.location?.id } : {}),
+                    "x": groupAdmin?.location?.x,
+                    "y": groupAdmin?.location?.y,
+                    "z": groupAdmin?.location?.z,
+                    "name": groupAdmin?.location?.name
                 },
                 "weight": groupAdmin?.weight,
                 "nationality": groupAdmin?.nationality
@@ -129,36 +136,17 @@ const ObjectControlModal: React.FC<ModalProps> = ({modalOpen, onModalCLose, chos
         setSelectExistingCoordinates(false)
         setSelectExistingAdmins(false)
         setSelectExistingLocations(false)
-        setErrorIndex(-1)
-        setErrors((prevErrors) => ({ ...prevErrors, numberError: undefined, compareError: undefined, stringError: undefined }));
+        setErrors((prevErrors) => ({ ...prevErrors,
+            numberError: undefined,
+            stringError: undefined,
+            studentsCountError: undefined,
+            expelledStudentsError: undefined,
+            transferredStudentsError: undefined,
+            shouldBeExpelledError: undefined
+        }));
         onModalCLose()
     }
 
-    const handlePositiveIntNumberError = (event: any, errorIndex: number) => {
-        if (Number(event.target.value) <= 0 || parseInt(event.target.value) !== Number(event.target.value)) {
-            setErrorIndex(errorIndex)
-            setErrors((prevErrors) => ({
-                ...prevErrors,
-                numberError: "Only positive integer numbers!",
-            }));
-        } else {
-            setErrors((prevErrors) => ({ ...prevErrors, numberError: undefined }));
-            setErrorIndex(-1)
-        }
-    }
-
-    const handleCompareError = (event: any, errorIndex: number) => {
-        if (studentsCount && (Number(event.target.value) > studentsCount)) {
-            setErrorIndex(errorIndex)
-            setErrors((prevErrors) => ({
-                ...prevErrors,
-                compareError: "This number should be less than total student count!",
-            }));
-        } else {
-            setErrors((prevErrors) => ({ ...prevErrors, compareError: undefined }));
-            setErrorIndex(-1)
-        }
-    }
 
 
     const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -195,19 +183,39 @@ const ObjectControlModal: React.FC<ModalProps> = ({modalOpen, onModalCLose, chos
 
     const handleStudentsCountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setStudentsCount(Number(event.target.value));
-        handlePositiveIntNumberError(event, 0)
+
+        if (Number(event.target.value) <= 0 || parseInt(event.target.value) !== Number(event.target.value)) {
+            setErrors((prevErrors) => ({
+                ...prevErrors,
+                studentsCountError: "Only positive integer numbers!",
+            }));
+        } else {
+            setErrors((prevErrors) => ({ ...prevErrors, studentsCountError: undefined }));
+        }
     };
 
     const handleExpelledStudentsChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (Number(event.target.value) <= 0 || parseInt(event.target.value) !== Number(event.target.value)) {
+            setErrors((prevErrors) => ({
+                ...prevErrors,
+                expelledStudentsError: "Only positive integer numbers!",
+            }));
+        } else {
+            setErrors((prevErrors) => ({ ...prevErrors, expelledStudentsError: undefined }));
+        }
         setExpelledStudents(Number(event.target.value));
-        handlePositiveIntNumberError(event, 1)
-        handleCompareError(event, 1)
     };
 
     const handleTransferredStudentsChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setTransferredStudents(Number(event.target.value));
-        handlePositiveIntNumberError(event, 2)
-        handleCompareError(event, 2)
+        if (Number(event.target.value) <= 0 || parseInt(event.target.value) !== Number(event.target.value)) {
+            setErrors((prevErrors) => ({
+                ...prevErrors,
+                transferredStudentsError: "Only positive integer numbers!",
+            }));
+        } else {
+            setErrors((prevErrors) => ({ ...prevErrors, transferredStudentsError: undefined }));
+        }
 
     };
 
@@ -217,8 +225,14 @@ const ObjectControlModal: React.FC<ModalProps> = ({modalOpen, onModalCLose, chos
 
     const handleShouldBeExpelledChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setShouldBeExpelled(Number(event.target.value));
-        handlePositiveIntNumberError(event, 3)
-        handleCompareError(event, 3)
+        if (Number(event.target.value) <= 0 || parseInt(event.target.value) !== Number(event.target.value)) {
+            setErrors((prevErrors) => ({
+                ...prevErrors,
+                shouldBeExpelledError: "Only positive integer numbers!",
+            }));
+        } else {
+            setErrors((prevErrors) => ({ ...prevErrors, shouldBeExpelledError: undefined }));
+        }
     };
 
     const handleSemesterEnumChange = (event: SelectChangeEvent) => {
@@ -234,24 +248,25 @@ const ObjectControlModal: React.FC<ModalProps> = ({modalOpen, onModalCLose, chos
 
         if (field === 'weight') {
             if (Number(value) <= 0) {
-                setErrorIndex(4)
                 setErrors((prevErrors) => ({
                     ...prevErrors,
                     numberError: "Value should be positive!",
                 }));
             } else {
                 setErrors((prevErrors) => ({ ...prevErrors, numberError: undefined }));
-                setErrorIndex(-1)
             }
         }
     };
 
     const handleGroupAdminLocationChange = (field: keyof Location, value: number | string) => {
         // @ts-ignore
-        setAdminLocation((prev) => ({
+        setGroupAdmin((prev) => ({
             ...prev,
-            [field]: value,
-        }))
+            location: {
+                ...prev?.location,
+                [field]: value,
+            },
+        }));
     };
 
     const handleAdminCanEditChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -344,9 +359,6 @@ const ObjectControlModal: React.FC<ModalProps> = ({modalOpen, onModalCLose, chos
                                         disabled={readonlyForCurrentUser}
                                     ></TextField>
                                     </Box>
-                                    {(!isNewGroup && chosenObject?.id !== chosenObject?.coordinates.id) &&
-                                        <FormHelperText id="x-input">Bound from another object (id: {chosenObject?.coordinates.id}), unable to edit here</FormHelperText>
-                                    }
                                 </FormControl>
                         }
 
@@ -365,8 +377,13 @@ const ObjectControlModal: React.FC<ModalProps> = ({modalOpen, onModalCLose, chos
                         required
                         defaultValue={isNewGroup ? undefined : chosenObject?.studentsCount}
                         onChange={handleStudentsCountChange}
-                        error={!!errors.numberError && errorIndex === 0}
-                        helperText={errors.numberError}
+                        error={!!errors.studentsCountError}
+                        helperText={errors.studentsCountError}
+                        inputProps={{
+                            min: 1,
+                            step: 1,
+                            pattern: "^[1-9][0-9]*$", // Только положительные целые числа
+                        }}
                         disabled={readonlyForCurrentUser}
                     ></TextField>
 
@@ -376,8 +393,13 @@ const ObjectControlModal: React.FC<ModalProps> = ({modalOpen, onModalCLose, chos
                         required
                         defaultValue={isNewGroup ? undefined : chosenObject?.expelledStudents}
                         onChange={handleExpelledStudentsChange}
-                        error={!!errors.numberError && errorIndex === 1}
-                        helperText={errors.numberError}
+                        error={!!errors.expelledStudentsError}
+                        helperText={errors.expelledStudentsError}
+                        inputProps={{
+                            min: 1,
+                            step: 1,
+                            pattern: "^[1-9][0-9]*$", // Только положительные целые числа
+                        }}
                         disabled={readonlyForCurrentUser}
                     ></TextField>
 
@@ -387,8 +409,13 @@ const ObjectControlModal: React.FC<ModalProps> = ({modalOpen, onModalCLose, chos
                         required
                         defaultValue={isNewGroup ? undefined : chosenObject?.transferredStudents}
                         onChange={handleTransferredStudentsChange}
-                        error={!!errors.numberError && errorIndex === 2}
-                        helperText={errors.numberError}
+                        error={!!errors.transferredStudentsError}
+                        helperText={errors.transferredStudentsError}
+                        inputProps={{
+                            min: 1,
+                            step: 1,
+                            pattern: "^[1-9][0-9]*$", // Только положительные целые числа
+                        }}
                         disabled={readonlyForCurrentUser}
                     />
 
@@ -414,8 +441,8 @@ const ObjectControlModal: React.FC<ModalProps> = ({modalOpen, onModalCLose, chos
                         required
                         defaultValue={isNewGroup ? undefined : chosenObject?.shouldBeExpelled}
                         onChange={handleShouldBeExpelledChange}
-                        error={!!errors.numberError && errorIndex === 3}
-                        helperText={errors.numberError}
+                        error={!!errors.shouldBeExpelledError}
+                        helperText={errors.shouldBeExpelledError}
                         disabled={readonlyForCurrentUser}
                     ></TextField>
 
@@ -572,10 +599,14 @@ const ObjectControlModal: React.FC<ModalProps> = ({modalOpen, onModalCLose, chos
                             <TextField
                                 label="Weight"
                                 required
+                                type="number"
                                 defaultValue={isNewGroup ? undefined : chosenObject?.groupAdmin.weight}
                                 onChange={(e) => handleGroupAdminChange('weight', Number(e.target.value))}
-                                error={!!errors.numberError && errorIndex === 4}
+                                error={!!errors.numberError}
                                 helperText={errors.numberError}
+                                inputProps={{
+                                    min: 1,
+                                }}
                                 disabled={readonlyForCurrentUser}
                             ></TextField>
                         </Box>
@@ -599,7 +630,13 @@ const ObjectControlModal: React.FC<ModalProps> = ({modalOpen, onModalCLose, chos
                             color="primary"
                             variant="contained"
                             type="submit"
-                            disabled={readonlyForCurrentUser || !!errors.stringError || !!errors.numberError || !!errors.compareError}>
+                            disabled={readonlyForCurrentUser ||
+                                !!errors.stringError ||
+                                !!errors.numberError ||
+                                !!errors.shouldBeExpelledError ||
+                        !!errors.studentsCountError ||
+                        !!errors.expelledStudentsError ||
+                        !!errors.transferredStudentsError}>
                             {isNewGroup ? 'Create' : 'Update'}
                         </Button>
                     </Box>

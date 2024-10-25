@@ -51,9 +51,9 @@ const CollectionObjectsDataGrid: React.FC = () => {
 
     useEffect(() => {
         fetchGroups()
-        // const intervalId = setInterval(fetchGroups, 2000)
-        //
-        // return () => clearInterval(intervalId)
+        const intervalId = setInterval(fetchGroups, 1000)
+
+        return () => clearInterval(intervalId)
     }, [])
 
     if (loading) {

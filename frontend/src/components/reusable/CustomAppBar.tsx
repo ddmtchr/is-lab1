@@ -19,11 +19,18 @@ const CustomAppBar: React.FC = () => {
 
     const user = useSelector((state: RootState) => state.user);
 
-    useEffect(() => {
+    const fetchApplications = () => {
         axiosInstance.get('api/admin/applications')
             .then((response) => {
                 setApplicationsCount(response.data.length)
             })
+    }
+
+    useEffect(() => {
+        fetchApplications()
+        const intervalId = setInterval(fetchApplications, 1000)
+
+        return () => clearInterval(intervalId)
     }, []);
 
 
