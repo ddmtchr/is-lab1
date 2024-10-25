@@ -58,14 +58,14 @@ const ObjectControlModal: React.FC<ModalProps> = ({modalOpen, onModalCLose, chos
             })
             .catch(() => setRequestError(true))
 
-        // axiosInstance.get('api/persons')
-        //     .then((response) => {
-        //         setExistingAdmins(response.data)
-        //     })
-        //     .catch(() => {
-        //         // setRequestError(true)
-        //         setExistingAdmins([])
-        //     })
+        axiosInstance.get('api/persons')
+            .then((response) => {
+                setExistingAdmins(response.data)
+            })
+            .catch(() => {
+                setRequestError(true)
+                setExistingAdmins([])
+            })
         setExistingAdmins([])
     }, []);
 

@@ -148,6 +148,7 @@ public class StudyGroupService {
                     entity.setCoordinates(existingSimilarCoordinates.get());
                 } else {
                     Coordinates newCoordinates = CoordinatesMapper.INSTANCE.toEntity(requestDTO.getCoordinates());
+                    newCoordinates.setCreatedBy(user);
                     coordinatesDAO.createCoordinates(newCoordinates);
                     entity.setCoordinates(newCoordinates);
                 }
