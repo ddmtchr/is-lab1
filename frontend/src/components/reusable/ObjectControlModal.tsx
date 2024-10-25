@@ -321,25 +321,25 @@ const ObjectControlModal: React.FC<ModalProps> = ({modalOpen, onModalCLose, chos
                         </Stack>
 
                         {selectExistingCoordinates &&
-                        <Select
-                            defaultValue=""
-                            variant="standard"
-                            onChange={handleCoordinatesChoosing}
-                            disabled={readonlyForCurrentUser}
-                            sx={{marginBottom: '20px'}}
-                            required
-                        >
-                            {existingCoordinates.map((coordinatesPair, index) => (
-                                <MenuItem value={coordinatesPair.id} key={index}>
-                                    ({coordinatesPair.x}, {coordinatesPair.y})
-                                </MenuItem>
-                            ))}
-                        </Select>
+                            <Select
+                                defaultValue=""
+                                variant="standard"
+                                onChange={handleCoordinatesChoosing}
+                                disabled={readonlyForCurrentUser}
+                                sx={{marginBottom: '20px'}}
+                                required
+                            >
+                                {existingCoordinates.map((coordinatesPair, index) => (
+                                    <MenuItem value={coordinatesPair.id} key={index}>
+                                        ({coordinatesPair.x}, {coordinatesPair.y})
+                                    </MenuItem>
+                                ))}
+                            </Select>
                         }
 
                         {!selectExistingCoordinates &&
-                                <FormControl>
-                                    <Box sx={{display: 'flex', flexDirection: 'row', gap: '5px'}}>
+                            <FormControl>
+                                <Box sx={{display: 'flex', flexDirection: 'row', gap: '5px'}}>
                                     <TextField
                                         label="X"
                                         type="number"
@@ -358,8 +358,8 @@ const ObjectControlModal: React.FC<ModalProps> = ({modalOpen, onModalCLose, chos
                                         required
                                         disabled={readonlyForCurrentUser}
                                     ></TextField>
-                                    </Box>
-                                </FormControl>
+                                </Box>
+                            </FormControl>
                         }
 
                     </Box>
@@ -419,21 +419,21 @@ const ObjectControlModal: React.FC<ModalProps> = ({modalOpen, onModalCLose, chos
                         disabled={readonlyForCurrentUser}
                     />
 
-                        <InputLabel>Form of education</InputLabel>
-                        <Select
-                            defaultValue={isNewGroup ? undefined : chosenObject?.formOfEducation}
-                            label="Form of education"
-                            variant="standard"
-                            required
-                            disabled={readonlyForCurrentUser}
-                            onChange={handleFormOfEducationChange}
-                        >
-                            {Object.values(FormOfEducation).map((form, index) => (
-                                <MenuItem value={form} key={index}>
-                                    {form}
-                                </MenuItem>
-                            ))}
-                        </Select>
+                    <InputLabel>Form of education</InputLabel>
+                    <Select
+                        defaultValue={isNewGroup ? undefined : chosenObject?.formOfEducation}
+                        label="Form of education"
+                        variant="standard"
+                        required
+                        disabled={readonlyForCurrentUser}
+                        onChange={handleFormOfEducationChange}
+                    >
+                        {Object.values(FormOfEducation).map((form, index) => (
+                            <MenuItem value={form} key={index}>
+                                {form}
+                            </MenuItem>
+                        ))}
+                    </Select>
 
                     <TextField
                         label="Should be expelled"
@@ -476,19 +476,19 @@ const ObjectControlModal: React.FC<ModalProps> = ({modalOpen, onModalCLose, chos
 
                     {selectExistingAdmins &&
                         <Select
-                        defaultValue=""
-                        variant="standard"
-                        required
-                        onChange={handleAdminChoosing}
-                        disabled={readonlyForCurrentUser}
-                        sx={{marginBottom: '20px'}}
-                    >
-                        {existingAdmins.map((admin, index) => (
-                            <MenuItem value={admin.id} key={index}>
-                                {admin.name}
-                            </MenuItem>
-                        ))}
-                    </Select>
+                            defaultValue=""
+                            variant="standard"
+                            required
+                            onChange={handleAdminChoosing}
+                            disabled={readonlyForCurrentUser}
+                            sx={{marginBottom: '20px'}}
+                        >
+                            {existingAdmins.map((admin, index) => (
+                                <MenuItem value={admin.id} key={index}>
+                                    {admin.name}
+                                </MenuItem>
+                            ))}
+                        </Select>
                     }
 
                     {!selectExistingAdmins &&
@@ -538,44 +538,44 @@ const ObjectControlModal: React.FC<ModalProps> = ({modalOpen, onModalCLose, chos
 
                             <Box className="form-box-container">
                                 <Typography>Location</Typography>
-                                    <FormControl>
-                                        <Stack direction="column" spacing={2} sx={{ marginBottom: '20px' }}>
-                                            <TextField
-                                                label="X"
-                                                type="number"
-                                                required
-                                                defaultValue={isNewGroup ? undefined : chosenObject?.groupAdmin.location.x}
-                                                onChange={(e) => handleGroupAdminLocationChange('x', Number(e.target.value))}
-                                                disabled={readonlyForCurrentUser}
-                                            ></TextField>
+                                <FormControl>
+                                    <Stack direction="column" spacing={2} sx={{ marginBottom: '20px' }}>
+                                        <TextField
+                                            label="X"
+                                            type="number"
+                                            required
+                                            defaultValue={isNewGroup ? undefined : chosenObject?.groupAdmin.location.x}
+                                            onChange={(e) => handleGroupAdminLocationChange('x', Number(e.target.value))}
+                                            disabled={readonlyForCurrentUser}
+                                        ></TextField>
 
-                                            <TextField
-                                                label="Y"
-                                                type="number"
-                                                required
-                                                defaultValue={isNewGroup ? undefined : chosenObject?.groupAdmin.location.y}
-                                                onChange={(e) => handleGroupAdminLocationChange('y', Number(e.target.value))}
-                                                disabled={readonlyForCurrentUser}
-                                            ></TextField>
+                                        <TextField
+                                            label="Y"
+                                            type="number"
+                                            required
+                                            defaultValue={isNewGroup ? undefined : chosenObject?.groupAdmin.location.y}
+                                            onChange={(e) => handleGroupAdminLocationChange('y', Number(e.target.value))}
+                                            disabled={readonlyForCurrentUser}
+                                        ></TextField>
 
-                                            <TextField
-                                                label="Z"
-                                                type="number"
-                                                required
-                                                defaultValue={isNewGroup ? undefined : chosenObject?.groupAdmin.location.z}
-                                                onChange={(e) => handleGroupAdminLocationChange('z', Number(e.target.value))}
-                                                disabled={readonlyForCurrentUser}
-                                            ></TextField>
+                                        <TextField
+                                            label="Z"
+                                            type="number"
+                                            required
+                                            defaultValue={isNewGroup ? undefined : chosenObject?.groupAdmin.location.z}
+                                            onChange={(e) => handleGroupAdminLocationChange('z', Number(e.target.value))}
+                                            disabled={readonlyForCurrentUser}
+                                        ></TextField>
 
-                                            <TextField
-                                                label="Name"
-                                                required
-                                                defaultValue={isNewGroup ? undefined : chosenObject?.groupAdmin.location.name}
-                                                onChange={(e) => handleGroupAdminLocationChange('name', e.target.value)}
-                                                disabled={readonlyForCurrentUser}
-                                            ></TextField>
-                                        </Stack>
-                                    </FormControl>
+                                        <TextField
+                                            label="Name"
+                                            required
+                                            defaultValue={isNewGroup ? undefined : chosenObject?.groupAdmin.location.name}
+                                            onChange={(e) => handleGroupAdminLocationChange('name', e.target.value)}
+                                            disabled={readonlyForCurrentUser}
+                                        ></TextField>
+                                    </Stack>
+                                </FormControl>
 
                             </Box>
 
@@ -634,9 +634,9 @@ const ObjectControlModal: React.FC<ModalProps> = ({modalOpen, onModalCLose, chos
                                 !!errors.stringError ||
                                 !!errors.numberError ||
                                 !!errors.shouldBeExpelledError ||
-                        !!errors.studentsCountError ||
-                        !!errors.expelledStudentsError ||
-                        !!errors.transferredStudentsError}>
+                                !!errors.studentsCountError ||
+                                !!errors.expelledStudentsError ||
+                                !!errors.transferredStudentsError}>
                             {isNewGroup ? 'Create' : 'Update'}
                         </Button>
                     </Box>
