@@ -27,7 +27,6 @@ const CollectionObjectsDataGrid: React.FC = () => {
         axiosInstance.get('api/study-groups', {
         })
             .then((response) => {
-
                 const rowData: RowData[] = response.data.map((item: any) => ({
                     id: item.id,
                     name: item.name,
@@ -80,7 +79,6 @@ const CollectionObjectsDataGrid: React.FC = () => {
 
 
     const handleSelectionChange = (newSelection: any) => {
-        console.log(newSelection)
         setSelectedRowIds(newSelection);
     };
 
@@ -103,7 +101,7 @@ const CollectionObjectsDataGrid: React.FC = () => {
     }
 
     const checkEditRights = (item: RowData) => {
-        return (AccessRights.ADMIN in user.roles && item.adminCanEdit) || (item.createdBy === user.id)
+        return (user.roles.includes(AccessRights.ADMIN) && item.adminCanEdit) || (item.createdBy === user.id)
     }
 
     const columns: GridColDef[] = [

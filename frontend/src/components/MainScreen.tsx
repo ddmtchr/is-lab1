@@ -1,30 +1,22 @@
 import React, {useState} from "react";
 import CollectionObjectsDataGrid from "./ProTable.tsx";
 import {
-    AppBar,
     Box,
     Button,
     ButtonGroup,
     Dialog, DialogActions, DialogContent,
     DialogTitle,
-    IconButton,
     TextField,
-    Toolbar,
-    Typography
 } from "@mui/material";
 import {ThemeProvider, createTheme} from '@mui/material/styles';
-import LogoutIcon from '@mui/icons-material/Logout';
 import GroupRemoveIcon from '@mui/icons-material/GroupRemove';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import Diversity2Icon from '@mui/icons-material/Diversity2';
 import AccessibleIcon from '@mui/icons-material/Accessible';
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
-import {useNavigate} from "react-router-dom";
 import axiosInstance from "../axiosConfig.ts";
-import {useDispatch, useSelector} from "react-redux";
-import {AppDispatch, RootState} from "../stores/store.ts";
-import {clearUser} from "../stores/userSlice.ts";
 import Notification from "./reusable/Notification.tsx";
+import CustomAppBar from "./reusable/CustomAppBar.tsx";
 
 const darkTheme = createTheme({
     palette: {
@@ -47,11 +39,6 @@ const MainScreen: React.FC = () => {
 
     const [openIndex, setOpenIndex] = useState<number>()
 
-    const navigate = useNavigate()
-
-    const dispatch = useDispatch<AppDispatch>();
-
-    const user = useSelector((state: RootState) => state.user);
 
     const defaultResponseErrorMessage = 'Request error, something went wrong...(('
 
@@ -172,11 +159,11 @@ const MainScreen: React.FC = () => {
 
     const validateIntModalValue = (value: string) => {
         if (parseInt(value) < 0 || !Number.isInteger(+value) || value.length === 0) {
-            setValidationError(true); // Устанавливаем состояние ошибки
+            setValidationError(true);
             setHelperText('Value must be a positive integer!');
         } else {
-            setValidationError(false); // Ошибок нет
-            setHelperText(''); // Очищаем текст ошибки
+            setValidationError(false);
+            setHelperText('');
         }
     };
 
@@ -193,8 +180,6 @@ const MainScreen: React.FC = () => {
     };
 
 
-
-
     const buttons = [
         <Button key="1" onClick={() => handleSpecialButtonClick(1)}><RemoveCircleOutlineIcon sx={{marginRight: 1}}/> Remove by should Be Expelled </Button>,
         <Button key="2" onClick={groupById}> <Diversity2Icon sx={{marginRight: 1}}/> Group by id</Button>,
@@ -204,30 +189,8 @@ const MainScreen: React.FC = () => {
     ];
 
     return (
-
                 <Box sx={{flexGrow: 1, minWidth: '100vw'}}>
-                    <AppBar position="static" sx={{textAlign: 'center'}}>
-                        <Toolbar>
-                            <Typography variant="h6" component="div" sx={{flexGrow: 1}}>
-                                Welcome, user {user.username ? user.username : 'Unidentified jackal'}!
-                            </Typography>
-                            <IconButton
-                                size="large"
-                                edge="start"
-                                color="inherit"
-                                aria-label="menu"
-                                title="Logout"
-                                onClick={() => {
-                                    dispatch(clearUser())
-                                    localStorage.removeItem('accessToken')
-                                    navigate('/login')
-                                }}
-                            >
-                                <LogoutIcon/>
-                            </IconButton>
-                            {/*<Button color="inherit">Login</Button>*/}
-                        </Toolbar>
-                    </AppBar>
+                    <CustomAppBar/>
 
                     <ThemeProvider theme={darkTheme}>
 

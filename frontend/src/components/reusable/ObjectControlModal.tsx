@@ -42,7 +42,6 @@ const ObjectControlModal: React.FC<ModalProps> = ({modalOpen, onModalCLose, chos
 
     const [requestError, setRequestError] = useState<boolean>(false)
     const [existingCoordinates, setExistingCoordinates] = useState<Coordinates[]>([])
-    const [existingLocations, setExistingLocations] = useState<Location[]>([])
     const [existingAdmins, setExistingAdmins] = useState<Person[]>([])
     const [selectExistingCoordinates, setSelectExistingCoordinates] = useState<boolean>(false)
     const [selectExistingLocations, setSelectExistingLocations] = useState<boolean>(false)
@@ -56,12 +55,6 @@ const ObjectControlModal: React.FC<ModalProps> = ({modalOpen, onModalCLose, chos
         axiosInstance.get('api/coordinates')
             .then((response) => {
                 setExistingCoordinates(response.data)
-            })
-            .catch(() => setRequestError(true))
-
-        axiosInstance.get('api/locations')
-            .then((response) => {
-                setExistingLocations(response.data)
             })
             .catch(() => setRequestError(true))
 
@@ -194,9 +187,6 @@ const ObjectControlModal: React.FC<ModalProps> = ({modalOpen, onModalCLose, chos
         setGroupAdmin(existingAdmins.find(a => a.id === Number(event.target.value)))
     }
 
-    const handleLocationChoosing = (event: SelectChangeEvent) => {
-        setAdminLocation(existingLocations.find(l => l.id === Number(event.target.value)))
-    }
 
     const handleCoordinatesChoosing = (event: SelectChangeEvent) => {
         setCoordinates(existingCoordinates.find(pair => pair.id === Number(event.target.value)))
@@ -342,7 +332,7 @@ const ObjectControlModal: React.FC<ModalProps> = ({modalOpen, onModalCLose, chos
                                         sx={{marginRight: '5px'}}
                                         onChange={(e) => handleCoordinatesChange('x', Number(e.target.value))}
                                         required
-                                        disabled={readonlyForCurrentUser || (!isNewGroup && chosenObject?.id !== chosenObject?.coordinates.id)}
+                                        disabled={readonlyForCurrentUser}
                                     />
 
                                     <TextField
@@ -351,7 +341,7 @@ const ObjectControlModal: React.FC<ModalProps> = ({modalOpen, onModalCLose, chos
                                         defaultValue={isNewGroup ? undefined : chosenObject?.coordinates.y}
                                         onChange={(e) => handleCoordinatesChange('y', Number(e.target.value))}
                                         required
-                                        disabled={readonlyForCurrentUser || (!isNewGroup && chosenObject?.id !== chosenObject?.coordinates.id)}
+                                        disabled={readonlyForCurrentUser}
                                     ></TextField>
                                     </Box>
                                     {(!isNewGroup && chosenObject?.id !== chosenObject?.coordinates.id) &&
@@ -386,8 +376,8 @@ const ObjectControlModal: React.FC<ModalProps> = ({modalOpen, onModalCLose, chos
                         required
                         defaultValue={isNewGroup ? undefined : chosenObject?.expelledStudents}
                         onChange={handleExpelledStudentsChange}
-                        error={(!!errors.numberError || !!errors.compareError) && errorIndex === 1}
-                        helperText={[errors.numberError, errors.compareError]}
+                        error={!!errors.numberError && errorIndex === 1}
+                        helperText={errors.numberError}
                         disabled={readonlyForCurrentUser}
                     ></TextField>
 
@@ -397,10 +387,10 @@ const ObjectControlModal: React.FC<ModalProps> = ({modalOpen, onModalCLose, chos
                         required
                         defaultValue={isNewGroup ? undefined : chosenObject?.transferredStudents}
                         onChange={handleTransferredStudentsChange}
-                        error={(!!errors.numberError || !!errors.compareError) && errorIndex === 2}
-                        helperText={[errors.numberError, errors.compareError]}
+                        error={!!errors.numberError && errorIndex === 2}
+                        helperText={errors.numberError}
                         disabled={readonlyForCurrentUser}
-                    ></TextField>
+                    />
 
                         <InputLabel>Form of education</InputLabel>
                         <Select
@@ -424,8 +414,8 @@ const ObjectControlModal: React.FC<ModalProps> = ({modalOpen, onModalCLose, chos
                         required
                         defaultValue={isNewGroup ? undefined : chosenObject?.shouldBeExpelled}
                         onChange={handleShouldBeExpelledChange}
-                        error={(!!errors.numberError || !!errors.compareError) && errorIndex === 3}
-                        helperText={[errors.numberError, errors.compareError]}
+                        error={!!errors.numberError && errorIndex === 3}
+                        helperText={errors.numberError}
                         disabled={readonlyForCurrentUser}
                     ></TextField>
 
@@ -521,37 +511,6 @@ const ObjectControlModal: React.FC<ModalProps> = ({modalOpen, onModalCLose, chos
 
                             <Box className="form-box-container">
                                 <Typography>Location</Typography>
-
-                                <Stack direction="row" spacing={1} sx={{ alignItems: 'center', marginBottom: '20px' }}>
-                                    <Typography>Create new location</Typography>
-                                    <Switch
-                                        defaultValue={'false'}
-                                        checked={selectExistingLocations}
-                                        onChange={(e) => setSelectExistingLocations(e.target.checked)}
-                                        inputProps={{ 'aria-label': 'controlled' }}
-                                        disabled={readonlyForCurrentUser}
-                                    />
-                                    <Typography>Select existing location</Typography>
-                                </Stack>
-
-                                {selectExistingLocations &&
-                                    <Select
-                                        defaultValue=""
-                                        variant="standard"
-                                        required
-                                        onChange={handleLocationChoosing}
-                                        disabled={readonlyForCurrentUser}
-                                        sx={{marginBottom: '20px'}}
-                                    >
-                                        {existingLocations.map((location, index) => (
-                                            <MenuItem value={location.id} key={index}>
-                                                {location.name}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                }
-
-                                {!selectExistingLocations &&
                                     <FormControl>
                                         <Stack direction="column" spacing={2} sx={{ marginBottom: '20px' }}>
                                             <TextField
@@ -560,7 +519,7 @@ const ObjectControlModal: React.FC<ModalProps> = ({modalOpen, onModalCLose, chos
                                                 required
                                                 defaultValue={isNewGroup ? undefined : chosenObject?.groupAdmin.location.x}
                                                 onChange={(e) => handleGroupAdminLocationChange('x', Number(e.target.value))}
-                                                disabled={readonlyForCurrentUser || (!isNewGroup && chosenObject?.id !== chosenObject?.coordinates.id)}
+                                                disabled={readonlyForCurrentUser}
                                             ></TextField>
 
                                             <TextField
@@ -569,7 +528,7 @@ const ObjectControlModal: React.FC<ModalProps> = ({modalOpen, onModalCLose, chos
                                                 required
                                                 defaultValue={isNewGroup ? undefined : chosenObject?.groupAdmin.location.y}
                                                 onChange={(e) => handleGroupAdminLocationChange('y', Number(e.target.value))}
-                                                disabled={readonlyForCurrentUser || (!isNewGroup && chosenObject?.id !== chosenObject?.coordinates.id)}
+                                                disabled={readonlyForCurrentUser}
                                             ></TextField>
 
                                             <TextField
@@ -578,7 +537,7 @@ const ObjectControlModal: React.FC<ModalProps> = ({modalOpen, onModalCLose, chos
                                                 required
                                                 defaultValue={isNewGroup ? undefined : chosenObject?.groupAdmin.location.z}
                                                 onChange={(e) => handleGroupAdminLocationChange('z', Number(e.target.value))}
-                                                disabled={readonlyForCurrentUser || (!isNewGroup && chosenObject?.id !== chosenObject?.coordinates.id)}
+                                                disabled={readonlyForCurrentUser}
                                             ></TextField>
 
                                             <TextField
@@ -586,15 +545,10 @@ const ObjectControlModal: React.FC<ModalProps> = ({modalOpen, onModalCLose, chos
                                                 required
                                                 defaultValue={isNewGroup ? undefined : chosenObject?.groupAdmin.location.name}
                                                 onChange={(e) => handleGroupAdminLocationChange('name', e.target.value)}
-                                                disabled={readonlyForCurrentUser || (!isNewGroup && chosenObject?.id !== chosenObject?.coordinates.id)}
+                                                disabled={readonlyForCurrentUser}
                                             ></TextField>
                                         </Stack>
-                                        {(!isNewGroup && chosenObject?.id !== chosenObject?.coordinates.id) &&
-                                            <FormHelperText id="x-input">Bound from another object (id: {chosenObject?.coordinates.id}), unable to edit here</FormHelperText>
-                                        }
                                     </FormControl>
-
-                                }
 
                             </Box>
 
