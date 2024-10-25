@@ -132,7 +132,7 @@ const CollectionObjectsDataGrid: React.FC = () => {
 
 
     return (
-        <div style={{height: 400, width: '100%'}}>
+        <div style={{height: 700, width: '100%'}}>
             <div style={{display: 'flex', flexDirection: 'row', gap: '10px', margin: '10px 5px'}}>
                 <Button onClick={createObject} variant="contained">
                     <AddCircleOutlineIcon sx={{marginRight: 1}}/>
