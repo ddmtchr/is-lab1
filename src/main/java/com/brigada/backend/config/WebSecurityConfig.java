@@ -6,6 +6,7 @@ import com.brigada.backend.security.jwt.JwtAuthenticationFilter;
 import com.brigada.backend.security.service.SHA512PasswordEncoder;
 import com.brigada.backend.security.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
@@ -80,6 +81,8 @@ public class WebSecurityConfig {
                                 .requestMatchers("/swagger-ui.html").permitAll()
                                 .requestMatchers("/").permitAll()
                                 .requestMatchers("/*.html").permitAll()
+                                .requestMatchers("/*.css").permitAll()
+                                .requestMatchers("/*.js").permitAll()
                                 .requestMatchers("/*.svg").permitAll()
                                 .requestMatchers("/assets/**").permitAll()
                                 .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
