@@ -28,9 +28,9 @@ const CustomAppBar: React.FC = () => {
 
     useEffect(() => {
         fetchApplications()
-        const intervalId = setInterval(fetchApplications, 1000)
-
-        return () => clearInterval(intervalId)
+        // const intervalId = setInterval(fetchApplications, 1000)
+        //
+        // return () => clearInterval(intervalId)
     }, []);
 
 
