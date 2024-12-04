@@ -61,6 +61,16 @@ public class StudyGroupDAO {
                 .getResultList();
     }
 
+    public boolean existsByName(String name) {
+        Session session = sessionFactory.getCurrentSession();
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<Long> query = builder.createQuery(Long.class);
+        Root<StudyGroup> root = query.from(StudyGroup.class);
+        query.select(builder.count(root)).where(builder.equal(root.get("name"), name));
+        Long count = session.createQuery(query).getSingleResult();
+        return count > 0;
+    }
+
     public StudyGroup updateStudyGroup(StudyGroup entity) {
         Session session = sessionFactory.getCurrentSession();
         return session.merge(entity);

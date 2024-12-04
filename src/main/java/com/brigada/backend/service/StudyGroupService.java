@@ -12,6 +12,7 @@ import com.brigada.backend.dto.request.PersonRequestDTO;
 import com.brigada.backend.dto.request.StudyGroupRequestDTO;
 import com.brigada.backend.dto.response.GroupCountByIdDTO;
 import com.brigada.backend.dto.response.StudyGroupResponseDTO;
+import com.brigada.backend.exception.ConstraintViolationException;
 import com.brigada.backend.exception.NoPermissionException;
 import com.brigada.backend.exception.NotFoundException;
 import com.brigada.backend.mapper.CoordinatesMapper;
@@ -42,6 +43,8 @@ public class StudyGroupService {
     public StudyGroupResponseDTO createStudyGroup(StudyGroupRequestDTO requestDTO, String username) {
         StudyGroup entity = StudyGroupMapper.INSTANCE.toEntity(requestDTO);
 
+        checkUniqueConstraint(requestDTO);
+
         User user = getUserByUsername(username);
         entity.setCreatedBy(user);
 
@@ -71,6 +74,7 @@ public class StudyGroupService {
                 .orElseThrow(() -> new NotFoundException("Study group doesn't exist"));
 
         checkPermission(user, existingEntity);
+        checkUniqueConstraint(requestDTO);
 
         StudyGroup entity = StudyGroupMapper.INSTANCE.toEntity(requestDTO);
         entity.setId(id);
@@ -255,6 +259,10 @@ public class StudyGroupService {
 
     private void checkPermission(User user, StudyGroup studyGroup) {
         if (!permissionService.canEditOrDelete(user, studyGroup)) throw new NoPermissionException("No permission to edit this object");
+    }
+
+    private void checkUniqueConstraint(StudyGroupRequestDTO studyGroupRequestDTO) {
+        if (dao.existsByName(studyGroupRequestDTO.getName())) throw new ConstraintViolationException("Name must be unique");
     }
 }
 

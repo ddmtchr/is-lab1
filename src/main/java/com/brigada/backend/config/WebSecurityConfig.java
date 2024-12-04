@@ -85,6 +85,7 @@ public class WebSecurityConfig {
                                 .requestMatchers("/*.svg").permitAll()
                                 .requestMatchers("/assets/**").permitAll()
                                 .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
+                                .requestMatchers("/api/import/**").authenticated()
                                 .requestMatchers("/api/import-history/my").authenticated()
                                 .requestMatchers("/api/import-history/**").hasAuthority("ADMIN")
                                 .anyRequest().authenticated()

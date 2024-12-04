@@ -1,6 +1,7 @@
 package com.brigada.backend.dao;
 
 import com.brigada.backend.domain.ImportHistory;
+import com.brigada.backend.dto.response.ImportHistoryResponseDTO;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
@@ -36,5 +37,12 @@ public class ImportHistoryDAO {
         query.select(root).where(builder.equal(root.get("user").get("username"), username));
 
         return session.createQuery(query).getResultList();
+    }
+
+    public ImportHistory addImportHistory(ImportHistory importHistory) {
+        Session session = sessionFactory.getCurrentSession();
+        session.persist(importHistory);
+        session.flush();
+        return importHistory;
     }
 }
