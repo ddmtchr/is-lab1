@@ -75,3 +75,10 @@ export interface RegisterData {
     password: string;
     roles: AccessRights[]
 }
+
+export interface importHistoryData {
+    id: number,
+    status: string
+    userId: number,
+    objectsCount: number
+}

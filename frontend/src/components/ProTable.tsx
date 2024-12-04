@@ -12,7 +12,15 @@ import {
     Typography
 } from '@mui/material';
 import {ruRU} from '@mui/x-data-grid/locales';
-import {AccessRights, Coordinates, FormOfEducation, Person, RowData, Semester} from "../interfaces.ts";
+import {
+    AccessRights,
+    Coordinates,
+    FormOfEducation,
+    importHistoryData,
+    Person,
+    RowData,
+    Semester
+} from "../interfaces.ts";
 import axiosInstance from "../axiosConfig.ts";
 import ObjectControlModal from "./reusable/ObjectControlModal.tsx";
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
@@ -36,21 +44,22 @@ const CollectionObjectsDataGrid: React.FC = () => {
     const [selectedFile, setSelectedFile] = useState<File | null>(null)
     const [importInProgress, setImportInProgress] = useState<boolean>(false)
     const [openImportHistory, setOpenImportHistory] = useState<boolean>(false)
-
     const [fileImportStatus, setFileImportStatus] = useState<string>('')
+
+    const [importHistoryData, setImportHistoryData] = useState<importHistoryData[]>()
 
     const user = useSelector((state: RootState) => state.user);
 
-    const createData = (operationId: number, status: string, operationStarter: number, objectsAdded: number) => {
-        return { operationId, status, operationStarter, objectsAdded };
-    }
+    // const createData = (operationId: number, status: string, operationStarter: number, objectsAdded: number) => {
+    //     return { operationId, status, operationStarter, objectsAdded };
+    // }
 
-    const importHistoryRows = [
-        createData(1, "success", 1, 5),
-        createData(2, "failure", 2, 0),
-        createData(3, "success", 7, 11),
-        createData(4, "success", 52, 4),
-    ];
+    // const importHistoryRows = [
+    //     createData(1, "success", 1, 5),
+    //     createData(2, "failure", 2, 0),
+    //     createData(3, "success", 7, 11),
+    //     createData(4, "success", 52, 4),
+    // ];
 
     const fetchGroups = () => {
         axiosInstance.get('api/study-groups', {
@@ -78,8 +87,21 @@ const CollectionObjectsDataGrid: React.FC = () => {
             })
     }
 
+    const isAdmin = () => {
+        return user.roles.includes(AccessRights.ADMIN)
+    }
+
+    const fetchImportHistoryData = () => {
+        const url = isAdmin() ? 'api/import-history' : 'api/import-history/my';
+
+        axiosInstance.get(url)
+            .then(response => setImportHistoryData(response.data))
+            .catch(() => setRequestError(true));
+    }
+
     useEffect(() => {
         fetchGroups()
+        fetchImportHistoryData()
         // const intervalId = setInterval(fetchGroups, 1000)
         //
         // return () => clearInterval(intervalId)
@@ -185,9 +207,6 @@ const CollectionObjectsDataGrid: React.FC = () => {
         setRequestError(false)
     }
 
-    const isAdmin = () => {
-        return user.roles.includes(AccessRights.ADMIN)
-    }
 
     const checkEditRights = (item: RowData) => {
         return (isAdmin() && item.adminCanEdit) || (item.createdBy === user.id)
@@ -369,32 +388,29 @@ const CollectionObjectsDataGrid: React.FC = () => {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {importHistoryRows
-                                    .filter((row) => isAdmin() || row.operationId === user.id)
+                                {importHistoryData && importHistoryData
+                                    .filter((row) => isAdmin() || row.userId === user.id)
                                     .map((row) => (
                                     <TableRow
-                                        key={row.operationId}
+                                        key={row.id}
                                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                     >
                                         <TableCell component="th" scope="row">
-                                            {row.operationId}
+                                            {row.id}
                                         </TableCell>
                                         <TableCell align="center">
-                                            <p style={{margin: "0", color: row.status === 'success' ? "green" : "#C10020"}}>{row.status}</p>
+                                            <p style={{margin: "0", color: row.status === 'SUCCESS' ? "green" : "#C10020"}}>{row.status}</p>
                                         </TableCell>
-                                        <TableCell align="center">{row.operationStarter}</TableCell>
-                                        <TableCell align="center">{row.objectsAdded}</TableCell>
+                                        <TableCell align="center">{row.userId}</TableCell>
+                                        <TableCell align="center">{row.objectsCount}</TableCell>
                                     </TableRow>
                                 ))}
 
-                                {importHistoryRows.length === 0 &&
-                                <Typography>Nothing to show</Typography>
-                                }
                             </TableBody>
                         </Table>
                     </TableContainer>
 
-                    {importHistoryRows.filter((row) => isAdmin() || row.operationId === user.id).length === 0 &&
+                    {importHistoryData && importHistoryData.filter((row) => isAdmin() || row.userId === user.id).length === 0 &&
                         <Typography color="#A9A9A9" fontSize="25px" fontStyle="italic" sx={{display: "flex", justifyContent: "center", marginTop: "10px"}}>
                             Nothing to show
                         </Typography>
