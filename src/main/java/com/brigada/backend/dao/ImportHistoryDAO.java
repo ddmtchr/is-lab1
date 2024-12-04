@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -39,6 +40,7 @@ public class ImportHistoryDAO {
         return session.createQuery(query).getResultList();
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public ImportHistory addImportHistory(ImportHistory importHistory) {
         Session session = sessionFactory.getCurrentSession();
         session.persist(importHistory);
