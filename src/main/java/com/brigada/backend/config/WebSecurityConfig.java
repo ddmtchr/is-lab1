@@ -6,7 +6,6 @@ import com.brigada.backend.security.jwt.JwtAuthenticationFilter;
 import com.brigada.backend.security.service.SHA512PasswordEncoder;
 import com.brigada.backend.security.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
@@ -86,6 +85,8 @@ public class WebSecurityConfig {
                                 .requestMatchers("/*.svg").permitAll()
                                 .requestMatchers("/assets/**").permitAll()
                                 .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
+                                .requestMatchers("/api/import-history/my").authenticated()
+                                .requestMatchers("/api/import-history/**").hasAuthority("ADMIN")
                                 .anyRequest().authenticated()
 //                                .anyRequest().permitAll()
                 );
