@@ -136,22 +136,22 @@ const CollectionObjectsDataGrid: React.FC = () => {
         console.log("File to upload:", selectedFile);
         setImportInProgress(true)
 
-        // try {
-        //     const response = await axiosInstance.post("/upload-endpoint", formData, {
-        //         headers: {
-        //             "Content-Type": "multipart/form-data", // Убедитесь, что это правильно
-        //         },
-        //     });
-        //     console.log("File uploaded successfully", response.data);
-        // } catch (error) {
-        //     console.error("Error uploading file", error);
-        // }
+        try {
+            const response = await axiosInstance.post("/api/import", formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data", // Убедитесь, что это правильно
+                },
+            });
+            console.log("File uploaded successfully", response.data);
+        } catch (error) {
+            console.error("Error uploading file", error);
+        }
     };
 
     const closeFileImport = () => {
         setImportFileActive(false)
         setSelectedFile(null)
-        setImportInProgress(false) //TODO: брать отсюда, временно чтоб не мешал кружок
+        setImportInProgress(false) //TODO: убрать отсюда, временно чтоб не мешал кружок
     }
 
     const closeImportHistory = () => {
