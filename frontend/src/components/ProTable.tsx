@@ -37,6 +37,8 @@ const CollectionObjectsDataGrid: React.FC = () => {
     const [importInProgress, setImportInProgress] = useState<boolean>(false)
     const [openImportHistory, setOpenImportHistory] = useState<boolean>(false)
 
+    const [fileImportStatus, setFileImportStatus] = useState<string>('')
+
     const user = useSelector((state: RootState) => state.user);
 
     const createData = (operationId: number, status: string, operationStarter: number, objectsAdded: number) => {
@@ -133,25 +135,28 @@ const CollectionObjectsDataGrid: React.FC = () => {
         formData.append("file", selectedFile);
 
         // Отправка файла через axios или любой другой механизм
-        console.log("File to upload:", selectedFile);
         setImportInProgress(true)
 
-        try {
-            const response = await axiosInstance.post("/api/import", formData, {
-                headers: {
-                    "Content-Type": "multipart/form-data", // Убедитесь, что это правильно
-                },
-            });
-            console.log("File uploaded successfully", response.data);
-        } catch (error) {
-            console.error("Error uploading file", error);
-        }
+        await axiosInstance.post("/api/import", formData, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        })
+            .then(response => {
+                if (response.status === 200) setFileImportStatus('success')
+            })
+            .catch(() => {
+                setFileImportStatus('error')
+            })
+            .finally(() => {
+                setImportInProgress(false)
+                closeFileImport()
+            })
     };
 
     const closeFileImport = () => {
         setImportFileActive(false)
         setSelectedFile(null)
-        setImportInProgress(false) //TODO: убрать отсюда, временно чтоб не мешал кружок
     }
 
     const closeImportHistory = () => {
@@ -402,6 +407,12 @@ const CollectionObjectsDataGrid: React.FC = () => {
 
             <Notification openCondition={requestError} onNotificationClose={handleNotificationClose} severity="error" responseText="Operation on object failed, try again"/>
 
+            <Notification
+                openCondition={fileImportStatus !== ''}
+                onNotificationClose={() => {setFileImportStatus('')}}
+                severity={fileImportStatus}
+                responseText={fileImportStatus === 'success' ? 'File has been successfully imported' : 'Error while importing file'}
+                />
 
         </div>
     );
