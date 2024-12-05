@@ -26,6 +26,10 @@ const CustomAppBar: React.FC = () => {
             })
     }
 
+    const isAdmin = () => {
+        return user.roles.includes(AccessRights.ADMIN)
+    }
+
     useEffect(() => {
         fetchApplications()
         // const intervalId = setInterval(fetchApplications, 1000)
@@ -34,9 +38,7 @@ const CustomAppBar: React.FC = () => {
     }, []);
 
 
-    const isAdmin = () => {
-        return user.roles.includes(AccessRights.ADMIN)
-    }
+
 
     return (
         <AppBar position="static" >

@@ -50,16 +50,6 @@ const CollectionObjectsDataGrid: React.FC = () => {
 
     const user = useSelector((state: RootState) => state.user);
 
-    // const createData = (operationId: number, status: string, operationStarter: number, objectsAdded: number) => {
-    //     return { operationId, status, operationStarter, objectsAdded };
-    // }
-
-    // const importHistoryRows = [
-    //     createData(1, "success", 1, 5),
-    //     createData(2, "failure", 2, 0),
-    //     createData(3, "success", 7, 11),
-    //     createData(4, "success", 52, 4),
-    // ];
 
     const fetchGroups = () => {
         axiosInstance.get('api/study-groups', {
@@ -102,9 +92,9 @@ const CollectionObjectsDataGrid: React.FC = () => {
     useEffect(() => {
         fetchGroups()
         fetchImportHistoryData()
-        // const intervalId = setInterval(fetchGroups, 1000)
-        //
-        // return () => clearInterval(intervalId)
+        const intervalId = setInterval(fetchGroups, 1000)
+
+        return () => clearInterval(intervalId)
     }, [])
 
     if (loading) {
@@ -121,6 +111,7 @@ const CollectionObjectsDataGrid: React.FC = () => {
     }
 
     const openImportHistoryModal = () => {
+        fetchImportHistoryData()
         setOpenImportHistory(true)
     }
 
