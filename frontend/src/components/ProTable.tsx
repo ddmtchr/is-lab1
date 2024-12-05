@@ -298,7 +298,7 @@ const CollectionObjectsDataGrid: React.FC = () => {
                 />
             }
 
-            <Dialog open={importFileActive} onClose={closeFileImport}>
+            <Dialog open={importFileActive} onClose={closeFileImport} sx={{ '& .MuiDialog-paper': { width: '360px', maxWidth: 'none' } }}>
                 <DialogTitle>Import groups from file</DialogTitle>
                 <DialogContent>
                     {importInProgress ?
