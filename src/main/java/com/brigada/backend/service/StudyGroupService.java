@@ -23,6 +23,8 @@ import com.brigada.backend.security.dao.UserDAO;
 import com.brigada.backend.security.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -31,7 +33,6 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class StudyGroupService {
     private final StudyGroupDAO dao;
     private final CoordinatesDAO coordinatesDAO;
@@ -40,6 +41,7 @@ public class StudyGroupService {
     private final UserDAO userDAO;
     private final PermissionService permissionService;
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_UNCOMMITTED)
     public StudyGroupResponseDTO createStudyGroup(StudyGroupRequestDTO requestDTO, String username) {
         StudyGroup entity = StudyGroupMapper.INSTANCE.toEntity(requestDTO);
 
@@ -55,18 +57,26 @@ public class StudyGroupService {
         return StudyGroupMapper.INSTANCE.toResponseDTO(created);
     }
 
+    @Transactional
     public StudyGroupResponseDTO getStudyGroupById(Integer id) {
         StudyGroup studyGroup = dao.getStudyGroupById(id)
                 .orElseThrow(() -> new NotFoundException("Study group doesn't exist"));
         return StudyGroupMapper.INSTANCE.toResponseDTO(studyGroup);
     }
 
-    public List<StudyGroupResponseDTO> getAllStudyGroups(int page, int size, String sortBy) {
-        return dao.getAllStudyGroups(page, size, sortBy).stream()
+    @Transactional
+    public List<StudyGroupResponseDTO> getAllStudyGroups(Integer page, Integer size, String sortBy) {
+        if (page != null && size != null) {
+            return dao.getAllStudyGroups(page, size, sortBy).stream()
+                    .map(StudyGroupMapper.INSTANCE::toResponseDTO)
+                    .collect(Collectors.toList());
+        }
+        return dao.getAllStudyGroups(sortBy).stream()
                 .map(StudyGroupMapper.INSTANCE::toResponseDTO)
                 .collect(Collectors.toList());
     }
 
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public StudyGroupResponseDTO updateStudyGroup(int id, StudyGroupRequestDTO requestDTO, String username) {
         User user = getUserByUsername(username);
 
@@ -87,6 +97,7 @@ public class StudyGroupService {
         return StudyGroupMapper.INSTANCE.toResponseDTO(dao.updateStudyGroup(entity));
     }
 
+    @Transactional
     public void deleteStudyGroupById(Integer id, String username) {
         User user = getUserByUsername(username);
 
@@ -107,6 +118,7 @@ public class StudyGroupService {
         return dao.countExpelledStudents();
     }
 
+    @Transactional
     public void expelAllStudentsByGroup(int id, String username) {
         User user = getUserByUsername(username);
 
@@ -119,12 +131,14 @@ public class StudyGroupService {
         dao.updateStudyGroup(studyGroup);
     }
 
+    @Transactional
     public List<StudyGroupResponseDTO> searchByName(String prefix) {
         return dao.searchByNamePrefix(prefix).stream()
                 .map(StudyGroupMapper.INSTANCE::toResponseDTO)
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public List<GroupCountByIdDTO> getGroupCountById() {
         List<Object[]> list = dao.getGroupCountById();
         return list.stream()
@@ -132,6 +146,7 @@ public class StudyGroupService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public List<Integer> deleteByShouldBeExpelled(Integer value, String username) {
         User user = getUserByUsername(username);
         return dao.deleteByShouldBeExpelled(value, user);

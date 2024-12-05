@@ -29,12 +29,12 @@ public class UserService implements UserDetailsService {
     }
 
     public boolean addUser(User user) {
-        if (user.getRoles().contains(Role.ADMIN) && userDao.countAdmins() > 0) {
-            adminApplicationDAO.addApplication(user);
-            return false;
-        } else {
+//        if (user.getRoles().contains(Role.ADMIN) && userDao.countAdmins() > 0) {
+//            adminApplicationDAO.addApplication(user);
+//            return false;
+//        } else {
             userDao.addUser(user);
             return true;
-        }
+//        }
     }
 }

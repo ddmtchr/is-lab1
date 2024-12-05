@@ -61,6 +61,16 @@ public class StudyGroupDAO {
                 .getResultList();
     }
 
+    public List<StudyGroup> getAllStudyGroups(String sortBy) {
+        Session session = sessionFactory.getCurrentSession();
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<StudyGroup> query = builder.createQuery(StudyGroup.class);
+        Root<StudyGroup> root = query.from(StudyGroup.class);
+        query.orderBy(builder.desc(root.get(sortBy)));
+
+        return session.createQuery(query).getResultList();
+    }
+
     public boolean existsByName(String name) {
         Session session = sessionFactory.getCurrentSession();
         CriteriaBuilder builder = session.getCriteriaBuilder();
