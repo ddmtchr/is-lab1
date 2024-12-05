@@ -21,8 +21,8 @@ public class StudyGroupController {
     private final JwtUtils jwtUtils;
 
     @GetMapping
-    public ResponseEntity<List<StudyGroupResponseDTO>> getAllStudyGroups(@RequestParam(defaultValue = "1") int page,
-                                                                         @RequestParam(defaultValue = "10") int size,
+    public ResponseEntity<List<StudyGroupResponseDTO>> getAllStudyGroups(@RequestParam(required = false) Integer page,
+                                                                         @RequestParam(required = false) Integer size,
                                                                          @RequestParam(defaultValue = "id") String sortBy) {
         return new ResponseEntity<>(studyGroupService.getAllStudyGroups(page, size, sortBy), HttpStatus.OK);
     }

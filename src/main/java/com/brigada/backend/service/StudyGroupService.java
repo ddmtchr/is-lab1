@@ -61,8 +61,13 @@ public class StudyGroupService {
         return StudyGroupMapper.INSTANCE.toResponseDTO(studyGroup);
     }
 
-    public List<StudyGroupResponseDTO> getAllStudyGroups(int page, int size, String sortBy) {
-        return dao.getAllStudyGroups(page, size, sortBy).stream()
+    public List<StudyGroupResponseDTO> getAllStudyGroups(Integer page, Integer size, String sortBy) {
+        if (page != null && size != null) {
+            return dao.getAllStudyGroups(page, size, sortBy).stream()
+                    .map(StudyGroupMapper.INSTANCE::toResponseDTO)
+                    .collect(Collectors.toList());
+        }
+        return dao.getAllStudyGroups(sortBy).stream()
                 .map(StudyGroupMapper.INSTANCE::toResponseDTO)
                 .collect(Collectors.toList());
     }
