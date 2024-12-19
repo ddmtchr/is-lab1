@@ -27,4 +27,7 @@ public class ImportHistory {
 
     @Column(nullable = true)
     private Long objectsCount;
+
+    @Column(nullable = true)
+    private String fileName;
 }

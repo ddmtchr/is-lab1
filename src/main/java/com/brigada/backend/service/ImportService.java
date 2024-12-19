@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +27,7 @@ public class ImportService {
     private final ImportHistoryDAO importHistoryDAO;
     private final StudyGroupService studyGroupService;
     private final UserDAO userDAO;
+    private final MinioService minioService;
 
     public List<ImportHistoryResponseDTO> getAllImportHistory() {
         return importHistoryDAO.getAllImportHistory().stream().map(ImportHistoryMapper.INSTANCE::toResponseDTO).toList();
@@ -40,6 +42,9 @@ public class ImportService {
         List<StudyGroupRequestDTO> studyGroups;
         ImportHistory history = new ImportHistory();
         history.setUser(userDAO.findByUsername(username).orElseThrow(() -> new NotFoundException("User not found")));
+
+        String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename() ;
+
         try {
             studyGroups = objectMapper.readValue(file.getInputStream(), new TypeReference<List<StudyGroupRequestDTO>>() {
             });
@@ -49,19 +54,29 @@ public class ImportService {
             throw new ImportException("Error parsing the file", e);
         }
 
+
         try {
             for (StudyGroupRequestDTO sg : studyGroups) {
                 studyGroupService.createStudyGroup(sg, username);
             }
             long importedCount = studyGroups.size();
+
+            minioService.uploadFileToMinIO(file, fileName);
+
             history.setStatus(ImportStatus.SUCCESS);
             history.setObjectsCount(importedCount);
+            history.setFileName(fileName);
             importHistoryDAO.addImportHistory(history);
+
             return importedCount;
         } catch (Exception e) {
             history.setStatus(ImportStatus.FAILED);
             importHistoryDAO.addImportHistory(history);
+
+            minioService.deleteFileFromMinIO(fileName);
+
             throw new ImportException("Import failed: " + e.getMessage());
         }
     }
+
 }

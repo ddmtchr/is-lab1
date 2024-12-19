@@ -2,7 +2,6 @@ package com.brigada.backend.security.service;
 
 import com.brigada.backend.security.dao.AdminApplicationDAO;
 import com.brigada.backend.security.dao.UserDAO;
-import com.brigada.backend.security.entity.Role;
 import com.brigada.backend.security.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;

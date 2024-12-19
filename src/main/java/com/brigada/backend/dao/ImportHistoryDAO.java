@@ -1,7 +1,6 @@
 package com.brigada.backend.dao;
 
 import com.brigada.backend.domain.ImportHistory;
-import com.brigada.backend.dto.response.ImportHistoryResponseDTO;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
