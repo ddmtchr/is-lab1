@@ -203,6 +203,26 @@ const CollectionObjectsDataGrid: React.FC = () => {
         return (isAdmin() && item.adminCanEdit) || (item.createdBy === user.id)
     }
 
+    const downloadFile = (fileName: string) => {
+        axiosInstance.get(`api/import/download/${fileName}`, { responseType: 'blob' })
+            .then(response => {
+                const url = window.URL.createObjectURL(new Blob([response.data]));
+
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', fileName);
+
+                document.body.appendChild(link);
+                link.click();
+
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(url);
+            })
+            .catch(error => {
+                console.error("Error downloading file: ", error);
+            });
+    };
+
     const columns: GridColDef[] = [
         { field: 'id', headerName: 'ID', width: 90 },
         { field: 'name', headerName: 'Name', width: 150 },
@@ -357,7 +377,7 @@ const CollectionObjectsDataGrid: React.FC = () => {
 
             </Dialog>
 
-            <Dialog open={openImportHistory} onClose={closeImportHistory} sx={{ '& .MuiDialog-paper': { width: '750px', maxWidth: 'none' } }}>
+            <Dialog open={openImportHistory} onClose={closeImportHistory} sx={{ '& .MuiDialog-paper': { width: '850px', maxWidth: 'none' } }}>
                 <DialogTitle>
                     <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center"}}>
                         Import history
@@ -369,13 +389,14 @@ const CollectionObjectsDataGrid: React.FC = () => {
                 </DialogTitle>
                 <DialogContent>
                     <TableContainer component={Paper}>
-                        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                        <Table sx={{ minWidth: 750 }} aria-label="simple table">
                             <TableHead>
                                 <TableRow>
                                     <TableCell>Operation id</TableCell>
                                     <TableCell align="center">Status</TableCell>
                                     <TableCell align="center">Operation starter</TableCell>
                                     <TableCell align="center">Objects added</TableCell>
+                                    <TableCell align="center">File</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -394,6 +415,15 @@ const CollectionObjectsDataGrid: React.FC = () => {
                                         </TableCell>
                                         <TableCell align="center">{row.userId}</TableCell>
                                         <TableCell align="center">{row.objectsCount}</TableCell>
+                                        <TableCell align="center">
+                                            {row.status === 'SUCCESS' &&
+                                                <IconButton
+                                                    onClick={() => {downloadFile(row.fileName)}}
+                                                >
+                                                    <FileDownloadIcon/>
+                                                </IconButton>
+                                            }
+                                        </TableCell>
                                     </TableRow>
                                 ))}
 
