@@ -15,4 +15,5 @@ public class ImportHistoryResponseDTO {
     private ImportStatus status;
     private Long userId;
     private Long objectsCount;
+    private String fileName;
 }
